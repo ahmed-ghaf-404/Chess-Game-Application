@@ -3,40 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BoardManager : MonoBehaviour{
+using System.Threading;
+
+public class BoardUIManager : MonoBehaviour{
     [SerializeField] private int _width = 8;
     [SerializeField] private int _height = 8;
     [SerializeField] private Square _squarePrefab;
     [SerializeField] private Transform _cam;
-    [SerializeField] private Piece _whitePawnPrefab;
-    [SerializeField] private Piece _whiteKnightPrefab;
-    [SerializeField] private Piece _whiteBishopPrefab;
-    [SerializeField] private Piece _whiteRookPrefab;
-    [SerializeField] private Piece _whiteQueenPrefab;
-    [SerializeField] private Piece _whiteKingPrefab;
-    [SerializeField] private Piece _blackPawnPrefab;
-    [SerializeField] private Piece _blackKnightPrefab;
-    [SerializeField] private Piece _blackBishopPrefab;
-    [SerializeField] private Piece _blackRookPrefab;
-    [SerializeField] private Piece _blackQueenPrefab;
-    [SerializeField] private Piece _blackKingPrefab;
+    [SerializeField] private Pawn _pawnPrefab;
+    [SerializeField] private Knight _knightPrefab;
+    [SerializeField] private Bishop _bishopPrefab;
+    [SerializeField] private Rook _rookPrefab;
+    [SerializeField] private Queen _queenPrefab;
+    [SerializeField] private King _kingPrefab;
+    
 
 
-    private Square[] squares;
+    private Square[,] squares;
+    private Piece[,] pieces;
     Piece prefab;
     
-    public BoardManager(){
-        squares = new Square[64];
-        
+    Player[] players;
+    private Player _currPlayer; 
+
+    public static GameObject selectedPiece;
+    public static GameObject selectedSquare;
+    public static GameObject otherSelectedPiece;
+    
+    
+    public BoardUIManager(){
+        squares = new Square[8,8];
+        pieces = new Piece[8,8];
+        this.players = new Player[] {new Player(), new Player()};
+        this._currPlayer = players[0];
     }
     // Start is called before the first frame update
     void Start(){
+        Debug.Log("Generating squares:");
         GenerateSquares();
+        Debug.Log("End generating squares:");
+
+        Debug.Log("Setting board FEN:");
+        
+        ReadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        Debug.Log("End setting board");
     }
 
     // Update is called once per frame
     void Update(){
-        
+        if (selectedPiece!=null && selectedSquare!=null){
+            MakeMove(selectedPiece, selectedSquare);
+            ResetSelection();
+        }
+        else if (selectedPiece!=null && otherSelectedPiece!=null){
+            MakeMove(selectedPiece, otherSelectedPiece);
+            Destroy(otherSelectedPiece);
+            ResetSelection();
+        }
     }
 
     void GenerateSquares(){
@@ -46,38 +69,92 @@ public class BoardManager : MonoBehaviour{
                 generatedSquare.name = $"Square:({x},{y})";
                 var isDarkSquare = (x + y) % 2 != 0;
                 generatedSquare.Init(isDarkSquare);
-                squares[8*x+y] = generatedSquare;
-                
-                int rndint = Random.Range(0, 12);
-                PutPiece(rndint,x,y);
+                squares[x,y] = generatedSquare;
             }
         }
         _cam.transform.position = new Vector3((float) _width*0.43f, (float) _height*0.43f, -10);
     }
-    void PutPiece(int piece, int x, int y){
-        Debug.Log(piece);
+    Piece PutPiece(int piece, int x, int y, int color){
+        string name = "";
         switch (piece){
-            case 0: return;
-            case 1: prefab = _whitePawnPrefab; break;
-            case 2: prefab = _whiteKnightPrefab; break;
-            case 3: prefab = _whiteBishopPrefab; break;
-            case 4: prefab = _whiteRookPrefab; break;
-            case 5: prefab = _whiteQueenPrefab; break;
-            case 6: prefab = _whiteKingPrefab; break;
-            case 7: prefab = _blackPawnPrefab; break;
-            case 8: prefab = _blackKnightPrefab; break;
-            case 9: prefab = _blackBishopPrefab; break;
-            case 10: prefab = _blackRookPrefab; break;
-            case 11: prefab = _blackQueenPrefab; break;
-            case 12: prefab = _blackKingPrefab; break;
+            case 0: return null;
+            case 1: prefab = _pawnPrefab; name = "pawn"; break;
+            case 2: prefab = _knightPrefab; name = "knight"; break;
+            case 3: prefab = _bishopPrefab; name = "bishop"; break;
+            case 4: prefab = _rookPrefab; name = "rook"; break;
+            case 5: prefab = _queenPrefab; name = "queen"; break;
+            case 6: prefab = _kingPrefab; name = "king"; break;
         }
+        var generatedPiece = Instantiate(prefab, new Vector3(x,y,-1), Quaternion.identity);
+        // generatedPiece.name = $"{name}:({x},{y})";
+        generatedPiece.name = $"Piece:({x},{y})";
+        generatedPiece.SetFile(x);
+        generatedPiece.SetRank(y);
+        generatedPiece.SetName(name);
+        generatedPiece.SetColor(color);
 
-        Debug.Log("prefab null?");
-        if (prefab!=null){
-            Debug.Log("no");
-            var generatedPiece = Instantiate(prefab, new Vector3(x,y,-1), Quaternion.identity);
-            generatedPiece.name = $"Piece:({x},{y})";
-        }
+        pieces[x,y] = generatedPiece;
+        return generatedPiece;
+    }
+
+    private void _FenToPiecePlacement(string fen){
+        int index = 0;
+        int x = 0;
+        int y = 0;
+        char curr;
+        int color;
+        
+        while (index<fen.Length){
+            // Debug.Log($"{fen.Length}>{index}");
+            // Debug.Log($"while loop {index}: ({x},{y})");
+            curr = fen[index];
+            color = char.IsLower(curr)? 0 : 1;
             
+            index++;
+            
+            if (char.IsDigit(curr))
+                x += curr - '0';
+            switch (char.ToLower(curr)){
+                case 'r': PutPiece(4,x,y,color); x++; break;
+                case 'n': PutPiece(2,x,y,color); x++; break;
+                case 'b': PutPiece(3,x,y,color); x++; break;
+                case 'q': PutPiece(5,x,y,color); x++; break;
+                case 'k': PutPiece(6,x,y,color); x++; break;
+                case 'p': PutPiece(1,x,y,color); x++; break;
+                case '/': y++; x=0; break;
+                // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+            }
+        }
+    }
+    void ReadFEN(string fen){
+        List<string> fen_parts = new List<string>(fen.Split(' '));
+        foreach (var part in fen_parts)
+        {
+            Debug.Log($"|{part}|");
+        }
+        // first part: piece placement
+        _FenToPiecePlacement(fen_parts[0]);
+
+        // second part: active color (current player)
+        _currPlayer = char.ToString('w')==fen_parts[1]? players[0] : players[1];
+
+        // TODO: rest parts
+        // third part: castling ability
+        
+        
+    }
+    private void MakeMove(GameObject from, GameObject to){
+        float x = to.transform.position.x;
+        float y = to.transform.position.y;
+
+
+        // TODO: if legal move, excute next line
+        from.transform.position = new Vector3(x,y,-1);
+        
+    }
+    private void ResetSelection(){
+        selectedPiece = null;
+        selectedSquare = null;
+        otherSelectedPiece = null;
     }
 }   

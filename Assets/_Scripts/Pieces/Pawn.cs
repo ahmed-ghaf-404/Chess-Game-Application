@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bishop : Piece{
-    public const string pieceName = "bishop";
-    
+public class Pawn : Piece
+{
+    public const string pieceName = "pawn";
 }

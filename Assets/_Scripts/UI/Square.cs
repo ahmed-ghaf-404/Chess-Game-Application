@@ -20,4 +20,9 @@ public class Square : MonoBehaviour{
     public void ClearSquare(){
         _piece = 0;
     }
+
+    void OnMouseDown(){
+        BoardUIManager.selectedSquare = gameObject;
+        Debug.Log(gameObject);
+    }
 }
