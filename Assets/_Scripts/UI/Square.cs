@@ -22,7 +22,6 @@ public class Square : MonoBehaviour{
     }
 
     void OnMouseDown(){
-        BoardUIManager.selectedSquare = gameObject;
-        Debug.Log(gameObject);
+        BoardUIManager.selectedSquare = this;
     }
 }

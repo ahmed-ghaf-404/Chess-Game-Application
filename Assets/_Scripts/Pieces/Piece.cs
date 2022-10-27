@@ -2,26 +2,25 @@ using UnityEngine;
 
 
 
-public class Piece : MonoBehaviour{
+public abstract class Piece : MonoBehaviour{
        
     [SerializeField] Sprite _black;
     private int file;
     private int rank;
     private int color;
+    private bool hasMoved=false;
 
     private string pieceName;
     
-    public bool isEnemy(Piece other){
-        /*
-        input: Piece other. A different piece
-        output: bool. Does the other piece have a different color. 
-        */
-        return !(other.color==this.color);
-    }
     SpriteRenderer spriteRenderer;
     public void Awake(){
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
     }
+    
+    abstract public void GenerateLegalMoves();
+    abstract public bool IsLegalMove(Move other_move);
+    
+
 
     public int GetFile(){return this.file;}
     public int GetRank(){return this.rank;}
@@ -36,10 +35,15 @@ public class Piece : MonoBehaviour{
 
     public string GetName(){return this.pieceName;} 
     public void SetName(string pieceName){this.pieceName=pieceName;} 
+    public void SetHasMoved(){
+        hasMoved = true;
+    }
+    public bool GetHasMoved(){
+        return hasMoved;
+    }
 
     public void DestroyPiece(){
         Destroy(this.gameObject);
     }
-
     
 }

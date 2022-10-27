@@ -16,24 +16,22 @@ public class BoardUIManager : MonoBehaviour{
     [SerializeField] private Rook _rookPrefab;
     [SerializeField] private Queen _queenPrefab;
     [SerializeField] private King _kingPrefab;
-    
 
 
-    private Square[,] squares;
-    private Piece[,] pieces;
+    private int _halfMoveCounter;
+    private int _fullMoveCounter;
     Piece prefab;
     
     Player[] players;
     private Player _currPlayer; 
 
-    public static GameObject selectedPiece;
-    public static GameObject selectedSquare;
-    public static GameObject otherSelectedPiece;
+    public static Piece selectedPiece;
+    public static Square selectedSquare;
+    public static Piece otherSelectedPiece;
     
     
     public BoardUIManager(){
-        squares = new Square[8,8];
-        pieces = new Piece[8,8];
+        Board.SetBoard(_height, _width);
         this.players = new Player[] {new Player(), new Player()};
         this._currPlayer = players[0];
     }
@@ -49,17 +47,15 @@ public class BoardUIManager : MonoBehaviour{
         Debug.Log("End setting board");
     }
 
-    // Update is called once per frame
     void Update(){
+        // if we're ready to make a move
+        // make it
         if (selectedPiece!=null && selectedSquare!=null){
-            MakeMove(selectedPiece, selectedSquare);
-            ResetSelection();
+            Board.MakeMove(selectedPiece, (int) selectedSquare.transform.position.x, (int) selectedSquare.transform.position.y);
+            selectedSquare = null;
         }
-        else if (selectedPiece!=null && otherSelectedPiece!=null){
-            MakeMove(selectedPiece, otherSelectedPiece);
-            Destroy(otherSelectedPiece);
-            ResetSelection();
-        }
+        // else
+        // reset square to null
     }
 
     void GenerateSquares(){
@@ -69,7 +65,7 @@ public class BoardUIManager : MonoBehaviour{
                 generatedSquare.name = $"Square:({x},{y})";
                 var isDarkSquare = (x + y) % 2 != 0;
                 generatedSquare.Init(isDarkSquare);
-                squares[x,y] = generatedSquare;
+                Board.SetSquare(x, y, generatedSquare);
             }
         }
         _cam.transform.position = new Vector3((float) _width*0.43f, (float) _height*0.43f, -10);
@@ -88,12 +84,13 @@ public class BoardUIManager : MonoBehaviour{
         var generatedPiece = Instantiate(prefab, new Vector3(x,y,-1), Quaternion.identity);
         // generatedPiece.name = $"{name}:({x},{y})";
         generatedPiece.name = $"Piece:({x},{y})";
-        generatedPiece.SetFile(x);
-        generatedPiece.SetRank(y);
+        generatedPiece.SetRank(x);
+        generatedPiece.SetFile(y);
         generatedPiece.SetName(name);
         generatedPiece.SetColor(color);
+        
 
-        pieces[x,y] = generatedPiece;
+        Board.SetPiece(x, y, generatedPiece);
         return generatedPiece;
     }
 
@@ -140,7 +137,14 @@ public class BoardUIManager : MonoBehaviour{
 
         // TODO: rest parts
         // third part: castling ability
+
+        // fourth part: enpassant for next move is legal
+
+        // fifth part: half move counter
+        int.TryParse(fen_parts[4], out this._halfMoveCounter);
         
+        // sixth part: full move counter
+        int.TryParse(fen_parts[5], out this._fullMoveCounter);
         
     }
     private void MakeMove(GameObject from, GameObject to){
@@ -152,9 +156,15 @@ public class BoardUIManager : MonoBehaviour{
         from.transform.position = new Vector3(x,y,-1);
         
     }
-    private void ResetSelection(){
+    static public void ResetSelection(){
         selectedPiece = null;
         selectedSquare = null;
         otherSelectedPiece = null;
+    }
+    static public void MovePiece(int from_rank, int form_file, int to_rank, int to_file){
+        if(otherSelectedPiece!=null)
+            Destroy(otherSelectedPiece);
+        selectedPiece.transform.position = new Vector3(to_rank, to_file, -1);
+
     }
 }   

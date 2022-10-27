@@ -10,6 +10,8 @@ public class Player{
     public void SetCanLongCastles(bool b){this._canLongCastles = b;}
     
     public Player(){
+        // unless specified from the FEN
+        // players can't castle
         this._canLongCastles = false;
         this._canShortCastles = false;
     }
