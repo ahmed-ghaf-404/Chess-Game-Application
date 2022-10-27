@@ -21,7 +21,7 @@ public class Pawn : Piece
         int y = GetFile();
         // quite moves:
         // 1- single push
-        Debug.Log($"offset:{MOVEMENT_OFSET}, x:{x}, y:{y}, color:{GetColor()}");
+        // Debug.Log($"offset:{MOVEMENT_OFSET}, x:{x}, y:{y}, color:{GetColor()}");
         y += MOVEMENT_OFSET;
         
 
@@ -31,7 +31,7 @@ public class Pawn : Piece
             // Debug.Log(temp_move);
             _legalMoves[0] = temp_move;
         }
-        Debug.Log($"offset:{MOVEMENT_OFSET}, x:{x}, y:{y}");
+        // Debug.Log($"offset:{MOVEMENT_OFSET}, x:{x}, y:{y}");
         
         // 2- double push
         y += MOVEMENT_OFSET;
