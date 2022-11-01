@@ -41,10 +41,11 @@ public class Pawn : Piece
         }
         // adding captures
         x = GetRank();
-        y--;
+        y = GetFile() + MOVEMENT_OFSET;
         var index = 2;
         for (int i=-1; i<2; i+=2){
             if (x>=0 && x<8 && y>=0 && y<8 && IsEnemy(board[x+i,y])){
+                Debug.Log($"{x+i}, {y}");
                 temp_move = new CaptureMove(this, x+i, y);
                 _legalMoves[index++] = temp_move;
             }
