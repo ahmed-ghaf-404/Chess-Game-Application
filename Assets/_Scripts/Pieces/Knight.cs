@@ -13,8 +13,5 @@ public class Knight : Piece
         
 
     }
-    override
-    public bool IsLegalMove(Move other_move){
-        return _legalMoves.Contains(other_move);
-    }
+    
 }

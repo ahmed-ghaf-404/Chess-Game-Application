@@ -57,7 +57,7 @@ public class BoardUIManager : MonoBehaviour{
         }
         _cam.transform.position = new Vector3((float) _width*0.43f, (float) _height*0.43f, -10);
     }
-    Piece PutPiece(int piece, int x, int y, int color){
+    Piece PutPiece(int piece, int file, int rank, int color){
         string name = "";
         switch (piece){
             case 0: return null;
@@ -68,13 +68,13 @@ public class BoardUIManager : MonoBehaviour{
             case 5: prefab = _queenPrefab; name = "queen"; break;
             case 6: prefab = _kingPrefab; name = "king"; break;
         }
-        var generatedPiece = Instantiate(prefab, new Vector3(x,y,-1), Quaternion.identity);
+        var generatedPiece = Instantiate(prefab, new Vector3(file,rank,-1), Quaternion.identity);
         // generatedPiece.name = $"{name}:({x},{y})";
-        generatedPiece.name = $"Piece:({x},{y})";
-        generatedPiece.Init(x,y,color, this);
+        generatedPiece.name = $"Piece:({file},{rank})";
+        generatedPiece.Init(file,rank,color, this);
         generatedPiece.SetName(name);
 
-        board[x, y] = generatedPiece;
+        board[file, rank] = generatedPiece;
         
         return generatedPiece;
     }
@@ -139,8 +139,8 @@ public class BoardUIManager : MonoBehaviour{
         
         pieceObj.transform.position = new Vector3(to_x, to_y, -1);
         pieceObj.name = $"Piece:({to_x},{to_y})";
-        board[to_x,to_y].SetRank(to_x);
-        board[to_x,to_y].SetFile(to_y);
+        board[to_x,to_y].SetFile(to_x);
+        board[to_x,to_y].SetRank(to_y);
     }
     static public void PrintBoard(Piece[,] board){
         string s = "";
@@ -185,22 +185,21 @@ public class BoardUIManager : MonoBehaviour{
             if (board[x, y] == null){
                 selectedEmptySquare = board[x, y];
                 if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y))){
-                    MovePiece(selectedPiece.GetRank(), selectedPiece.GetFile(), x, y, false);
+                    MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, false);
                 }
             }
             // case 3: select another piece
-            if (board[x, y] != null && selectedPiece.GetRank()!=x && selectedPiece.GetFile()!=y){
+            else if (board[x, y] != null){
                 otherSelectedPiece = board[x, y];
-                PrintBoard(board);
-                Debug.Log($"Selected another piece: {otherSelectedPiece}");
                 if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y))){
-                    MovePiece(selectedPiece.GetRank(), selectedPiece.GetFile(), x, y, true);
+                    MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, true);
                 }
             }
+            // Debug.Log($"Selected empty square: {selectedEmptySquare}");
+            // Debug.Log($"Selected another piece: {otherSelectedPiece}");
             ResetSelection();
         }
         // Debug.Log($"Selected piece: {selectedPiece}");
-        // Debug.Log($"Selected empty square: {selectedEmptySquare}");
 
     }
     void ResetSelection(){

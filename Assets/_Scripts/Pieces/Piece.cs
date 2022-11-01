@@ -19,9 +19,9 @@ public abstract class Piece : MonoBehaviour{
     }
     
     abstract public void GenerateLegalMoves(Piece[,] board);
-    abstract public bool IsLegalMove(Move other_move);
+
     
-    public void Init(int rank, int file, int color, BoardUIManager boardManager ){
+    public void Init(int file, int rank, int color, BoardUIManager boardManager ){
         this.rank = rank;
         this.file = file;
         this.color = color;
@@ -69,6 +69,17 @@ public abstract class Piece : MonoBehaviour{
     }
     public char GetSymbol(){
         return pieceName[0];
+    }
+    public bool IsLegalMove(Move other_move){
+        foreach (var move in _legalMoves){
+            Debug.Log(move);
+            if (move == null)
+                continue;
+            else if (move.IsSameMove(other_move))
+                return true;
+        }
+        Debug.Log("No legal moves found");
+        return false;
     }
     
 }

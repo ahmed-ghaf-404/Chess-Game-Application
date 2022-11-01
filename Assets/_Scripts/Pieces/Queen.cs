@@ -10,8 +10,5 @@ public class Queen : Piece{
         // quite moves 
         
     }
-    override
-    public bool IsLegalMove(Move other_move){
-        return _legalMoves.Contains(other_move);
-    }
+    
 }

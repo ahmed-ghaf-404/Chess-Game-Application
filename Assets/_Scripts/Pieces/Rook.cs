@@ -11,8 +11,5 @@ public class Rook : Piece{
         // quite moves 
         
     }
-    override
-    public bool IsLegalMove(Move other_move){
-        return _legalMoves.Contains(other_move);
-    }
+    
 }
