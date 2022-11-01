@@ -25,18 +25,15 @@ public class BoardUIManager : MonoBehaviour{
     Player[] players;
     private Player _currPlayer; 
 
-    public static Piece selectedPiece;
-    public static Square selectedSquare;
-    public static Piece otherSelectedPiece;
-    
-    
-    public BoardUIManager(){
-        Board.SetBoard(_height, _width);
+    public Piece selectedPiece = null;
+    public Piece selectedEmptySquare = null;
+    public Piece otherSelectedPiece = null;
+    public Piece[,] board;
+
+    void Awake(){
+        this.board = new Piece[_height, _width];
         this.players = new Player[] {new Player(), new Player()};
         this._currPlayer = players[0];
-    }
-    // Start is called before the first frame update
-    void Start(){
         Debug.Log("Generating squares:");
         GenerateSquares();
         Debug.Log("End generating squares:");
@@ -44,18 +41,9 @@ public class BoardUIManager : MonoBehaviour{
         Debug.Log("Setting board FEN:");
         
         ReadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        // ReadFEN("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
         Debug.Log("End setting board");
-    }
-
-    void Update(){
-        // if we're ready to make a move
-        // make it
-        if (selectedPiece!=null && selectedSquare!=null){
-            Board.MakeMove(selectedPiece, (int) selectedSquare.transform.position.x, (int) selectedSquare.transform.position.y);
-            selectedSquare = null;
-        }
-        // else
-        // reset square to null
+        
     }
 
     void GenerateSquares(){
@@ -65,7 +53,6 @@ public class BoardUIManager : MonoBehaviour{
                 generatedSquare.name = $"Square:({x},{y})";
                 var isDarkSquare = (x + y) % 2 != 0;
                 generatedSquare.Init(isDarkSquare);
-                Board.SetSquare(x, y, generatedSquare);
             }
         }
         _cam.transform.position = new Vector3((float) _width*0.43f, (float) _height*0.43f, -10);
@@ -84,13 +71,11 @@ public class BoardUIManager : MonoBehaviour{
         var generatedPiece = Instantiate(prefab, new Vector3(x,y,-1), Quaternion.identity);
         // generatedPiece.name = $"{name}:({x},{y})";
         generatedPiece.name = $"Piece:({x},{y})";
-        generatedPiece.SetRank(x);
-        generatedPiece.SetFile(y);
+        generatedPiece.Init(x,y,color, this);
         generatedPiece.SetName(name);
-        generatedPiece.SetColor(color);
-        
 
-        Board.SetPiece(x, y, generatedPiece);
+        board[x, y] = generatedPiece;
+        
         return generatedPiece;
     }
 
@@ -102,8 +87,6 @@ public class BoardUIManager : MonoBehaviour{
         int color;
         
         while (index<fen.Length){
-            // Debug.Log($"{fen.Length}>{index}");
-            // Debug.Log($"while loop {index}: ({x},{y})");
             curr = fen[index];
             color = char.IsLower(curr)? 0 : 1;
             
@@ -125,10 +108,6 @@ public class BoardUIManager : MonoBehaviour{
     }
     void ReadFEN(string fen){
         List<string> fen_parts = new List<string>(fen.Split(' '));
-        foreach (var part in fen_parts)
-        {
-            Debug.Log($"|{part}|");
-        }
         // first part: piece placement
         _FenToPiecePlacement(fen_parts[0]);
 
@@ -147,24 +126,87 @@ public class BoardUIManager : MonoBehaviour{
         int.TryParse(fen_parts[5], out this._fullMoveCounter);
         
     }
-    private void MakeMove(GameObject from, GameObject to){
-        float x = to.transform.position.x;
-        float y = to.transform.position.y;
+    public void MovePiece(int from_x, int from_y, int to_x, int to_y, bool isCapture){
+        board[to_x, to_y] = board[from_x, from_y];
+        board[from_x, from_y] = null;
 
-
-        // TODO: if legal move, excute next line
-        from.transform.position = new Vector3(x,y,-1);
+        GameObject pieceObj = GameObject.Find($"Piece:({from_x},{from_y})");
         
+        if (isCapture){
+            Debug.Log("destroyed piece via capture");
+            Destroy(GameObject.Find($"Piece:({to_x},{to_y})"));
+        }
+        
+        pieceObj.transform.position = new Vector3(to_x, to_y, -1);
+        pieceObj.name = $"Piece:({to_x},{to_y})";
+        board[to_x,to_y].SetRank(to_x);
+        board[to_x,to_y].SetFile(to_y);
     }
-    static public void ResetSelection(){
-        selectedPiece = null;
-        selectedSquare = null;
-        otherSelectedPiece = null;
+    static public void PrintBoard(Piece[,] board){
+        string s = "";
+        for (int i=0; i<8;i++){
+            for(int j=0; j<8; j++){
+                if (board[j,i] == null)
+                    s+="  |";
+                else{
+                    s += $"{board[j,i].GetSymbol()}|";
+                }
+            }
+            s+='\n';
+        }
+        Debug.Log(s);
     }
-    static public void MovePiece(int from_rank, int form_file, int to_rank, int to_file){
-        if(otherSelectedPiece!=null)
-            Destroy(otherSelectedPiece);
-        selectedPiece.transform.position = new Vector3(to_rank, to_file, -1);
 
+    void OnMouseDown(){
+        var x = (int) Input.mousePosition.x - 85;
+        var y = (int) Input.mousePosition.y - 80;
+
+        // first square aka (0,0):
+        // x: 0~80
+        // y: 0~80
+        int square_x = x / 80;
+        int square_y = y / 80;
+        if (x%80>15 && x%80<65 && y%80>15 && y%80<65 && square_x<8 && square_y<8){
+            // guarded area
+            CheckClicking(board, square_x, square_y);
+            if (selectedPiece != null){
+                selectedPiece.GenerateLegalMoves(this.board); 
+            }
+            
+        }
+    }
+    void CheckClicking(Piece[,] board, int x, int y){
+        // case 1: selecting a new piece
+        if (selectedPiece == null && board[x, y] != null){
+            selectedPiece = board[x, y];
+        }
+        else if(selectedPiece != null){
+            // case 2: selecting a new square
+            if (board[x, y] == null){
+                selectedEmptySquare = board[x, y];
+                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y))){
+                    MovePiece(selectedPiece.GetRank(), selectedPiece.GetFile(), x, y, false);
+                }
+            }
+            // case 3: select another piece
+            if (board[x, y] != null && selectedPiece.GetRank()!=x && selectedPiece.GetFile()!=y){
+                otherSelectedPiece = board[x, y];
+                PrintBoard(board);
+                Debug.Log($"Selected another piece: {otherSelectedPiece}");
+                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y))){
+                    MovePiece(selectedPiece.GetRank(), selectedPiece.GetFile(), x, y, true);
+                }
+            }
+            ResetSelection();
+        }
+        // Debug.Log($"Selected piece: {selectedPiece}");
+        // Debug.Log($"Selected empty square: {selectedEmptySquare}");
+
+    }
+    void ResetSelection(){
+        selectedEmptySquare = null;
+        selectedPiece = null;
+        otherSelectedPiece = null;
+        return ;
     }
 }   

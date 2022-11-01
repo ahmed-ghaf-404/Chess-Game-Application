@@ -5,22 +5,29 @@ using UnityEngine;
 public abstract class Piece : MonoBehaviour{
        
     [SerializeField] Sprite _black;
-    private int file;
-    private int rank;
-    private int color;
-    private bool hasMoved=false;
+    protected int file;
+    protected int rank;
+    protected int color;
+    protected bool hasMoved=false;
 
-    private string pieceName;
+    protected string pieceName;
+    protected Move[] _legalMoves;
     
     SpriteRenderer spriteRenderer;
     public void Awake(){
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
     }
     
-    abstract public void GenerateLegalMoves();
+    abstract public void GenerateLegalMoves(Piece[,] board);
     abstract public bool IsLegalMove(Move other_move);
     
-
+    public void Init(int rank, int file, int color, BoardUIManager boardManager ){
+        this.rank = rank;
+        this.file = file;
+        this.color = color;
+        if (color==1)
+            spriteRenderer.sprite = _black;
+    }
 
     public int GetFile(){return this.file;}
     public int GetRank(){return this.rank;}
@@ -41,9 +48,27 @@ public abstract class Piece : MonoBehaviour{
     public bool GetHasMoved(){
         return hasMoved;
     }
+    public Move[] GetLegalMoves(){
+        return _legalMoves;
+    }
+    public void SetLegalMoves(Move[] moves){
+        this._legalMoves = moves;
+    }
+    public bool IsEnemy(Piece other){
+        if (other==null)
+            return false;
+        return GetColor()!=other.GetColor();
+    }
 
     public void DestroyPiece(){
         Destroy(this.gameObject);
+    }
+
+    public string PieceString(){
+        return $"{color} {pieceName}: ({rank},{file})";
+    }
+    public char GetSymbol(){
+        return pieceName[0];
     }
     
 }

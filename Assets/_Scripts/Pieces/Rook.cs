@@ -1,16 +1,13 @@
 using System.Linq;
 
-public class Rook : Piece
-{
-    public const string pieceName = "Rook";
-    private Move[] _legalMoves;
+public class Rook : Piece{
 
     Rook(){
         SetName(pieceName);
     }
 
     override 
-    public void GenerateLegalMoves(){
+    public void GenerateLegalMoves(Piece[,] board){
         // quite moves 
         
     }

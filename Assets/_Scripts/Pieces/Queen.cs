@@ -1,15 +1,12 @@
 using System.Linq;
 
-public class Queen : Piece
-{
-    public const string pieceName = "Queen";
-    private Move[] _legalMoves;
+public class Queen : Piece{
 
     Queen(){
         SetName(pieceName);
     }
     override 
-    public void GenerateLegalMoves(){
+    public void GenerateLegalMoves(Piece[,] board){
         // quite moves 
         
     }

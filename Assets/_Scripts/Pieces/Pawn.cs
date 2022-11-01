@@ -5,16 +5,15 @@ public class Pawn : Piece
 {
     
     private int MOVEMENT_OFSET;
-    private Move[] _legalMoves = new Move[4];
-
-    public const string pieceName = "Pawn";
 
     Pawn(){
+        // ? INFO/Question: Is this important??
         SetName(pieceName);
+        this._legalMoves = new Move[4];
     }
     
     override 
-    public void GenerateLegalMoves(){
+    public void GenerateLegalMoves(Piece[,] board){
         this.MOVEMENT_OFSET = GetColor()==0? 1: -1;
         Move temp_move;
         int x = GetRank();
@@ -24,29 +23,35 @@ public class Pawn : Piece
         // Debug.Log($"offset:{MOVEMENT_OFSET}, x:{x}, y:{y}, color:{GetColor()}");
         y += MOVEMENT_OFSET;
         
-
+        
         // check if there's a piece on (x,y)
-        if (Board.GetPiece(x,y)==null){
+        if (board[x,y]==null){
             temp_move = new QuitMove(this, x, y);
             // Debug.Log(temp_move);
             _legalMoves[0] = temp_move;
         }
-        // Debug.Log($"offset:{MOVEMENT_OFSET}, x:{x}, y:{y}");
         
         // 2- double push
         y += MOVEMENT_OFSET;
         
-        if (!GetHasMoved() && Board.GetPiece(x,y)==null){
+        if (!GetHasMoved() && board[x,y]==null){
             temp_move = new QuitMove(this, x, y);
             // Debug.Log(temp_move);
             _legalMoves[1] = temp_move;
         }
-
-        // attack moves:
+        // adding captures
+        x = GetRank();
+        y--;
+        var index = 2;
+        for (int i=-1; i<2; i+=2){
+            if (x>=0 && x<8 && y>=0 && y<8 && IsEnemy(board[x+i,y])){
+                temp_move = new CaptureMove(this, x+i, y);
+                _legalMoves[index++] = temp_move;
+            }
+        }
     }
     override
     public bool IsLegalMove(Move other_move){
-
         foreach (var move in _legalMoves){
             if (move == null)
                 continue;
@@ -54,18 +59,5 @@ public class Pawn : Piece
                 return true;
         }
         return false;
-    }
-    void OnMouseDown(){
-        Debug.Log(gameObject);
-        GenerateLegalMoves();
-        
-        if (BoardUIManager.selectedPiece == null){
-            BoardUIManager.selectedSquare = null;
-            BoardUIManager.selectedPiece = this;
-        }
-        else{
-            BoardUIManager.otherSelectedPiece = this;
-        }
-        
     }
 }

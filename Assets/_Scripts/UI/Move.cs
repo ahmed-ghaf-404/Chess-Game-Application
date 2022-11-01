@@ -16,7 +16,9 @@ public abstract class Move{
 
     public int GetXDist(){ return _xDist;}
     public int GetYDist(){ return _yDist;}
-    abstract public bool IsSameMove(Move m);
+    public bool IsSameMove(Move m){
+        return m.GetXDist()==GetXDist() && m.GetYDist()==GetYDist() && m.GetType()==GetType();
+    }
 }
 
 class QuitMove : Move{
@@ -25,8 +27,12 @@ class QuitMove : Move{
         this._xDist = x;
         this._yDist = y;
     }
+}
 
-    public override bool IsSameMove(Move m){
-        return m.GetXDist()==GetXDist() && m.GetYDist()==GetYDist() && m.GetType()==GetType();
+class CaptureMove : Move{
+    public CaptureMove(Piece p, int x, int y){
+        this._thisPiece = p;
+        this._xDist = x;
+        this._yDist = y;
     }
 }

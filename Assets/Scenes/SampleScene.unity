@@ -207,6 +207,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1950855280
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1950855282}
+  - component: {fileID: 1950855281}
+  m_Layer: 0
+  m_Name: MoveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1950855281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950855280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce6023b8d73647458be040637bb46c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1950855282
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950855280}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.7950833, y: 2.950689, z: -9.468345}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2079797739
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,6 +261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2079797741}
   - component: {fileID: 2079797742}
+  - component: {fileID: 2079797743}
   m_Layer: 0
   m_Name: BoardUIManager
   m_TagString: Untagged
@@ -232,9 +277,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2079797739}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.30788857, y: -0.9198867, z: 0.13255665}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 3.5, y: 3.5, z: -2}
+  m_LocalScale: {x: 8.166873, y: 8.166873, z: 8.166873}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -255,9 +300,38 @@ MonoBehaviour:
   _height: 8
   _squarePrefab: {fileID: 4230531451631161056, guid: 368c11ef76dc94cfbb1bedb1fc0da411, type: 3}
   _cam: {fileID: 519420032}
-  _pawnPrefab: {fileID: 5757471591291175238, guid: 2887144a2bb8946e984c17a1daf26c0e, type: 3}
-  _knightPrefab: {fileID: 5189366698668014373, guid: 95f38306596b84f95a9388df5ea3ff9c, type: 3}
-  _bishopPrefab: {fileID: 784336663409456877, guid: 1a7804a7cb6564848a84d620205395a4, type: 3}
-  _rookPrefab: {fileID: 1433616245447731981, guid: 3bf87eaf5818e4af8b0aaa61da04bbc4, type: 3}
-  _queenPrefab: {fileID: 602446038322155886, guid: f2303619c6c824616a625ab5fb82014d, type: 3}
-  _kingPrefab: {fileID: 1318218043696328240, guid: 42089f1902d544c9aa5bc491a2759389, type: 3}
+  _pawnPrefab: {fileID: 1592505623510050313, guid: 2887144a2bb8946e984c17a1daf26c0e, type: 3}
+  _knightPrefab: {fileID: 8220494847160905595, guid: 95f38306596b84f95a9388df5ea3ff9c, type: 3}
+  _bishopPrefab: {fileID: 2695960866057107824, guid: 1a7804a7cb6564848a84d620205395a4, type: 3}
+  _rookPrefab: {fileID: 6248714427497841056, guid: 3bf87eaf5818e4af8b0aaa61da04bbc4, type: 3}
+  _queenPrefab: {fileID: 4124020808173810011, guid: f2303619c6c824616a625ab5fb82014d, type: 3}
+  _kingPrefab: {fileID: 5422082308296062797, guid: 42089f1902d544c9aa5bc491a2759389, type: 3}
+  selectedPiece: {fileID: 0}
+  selectedSquare: {fileID: 0}
+  otherSelectedPiece: {fileID: 0}
+--- !u!61 &2079797743
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079797739}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0

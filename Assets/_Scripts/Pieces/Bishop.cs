@@ -1,13 +1,11 @@
 using System.Linq;
 
 public class Bishop : Piece{
-    public const string pieceName = "Bishop";
-    private Move[] _legalMoves;
     Bishop(){
         SetName(pieceName);
     }
     override 
-    public void GenerateLegalMoves(){
+    public void GenerateLegalMoves(Piece[,] board){
         // quite moves 
     }
     
