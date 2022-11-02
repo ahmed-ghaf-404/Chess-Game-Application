@@ -8,8 +8,8 @@ public abstract class Piece : MonoBehaviour{
     protected int file;
     protected int rank;
     protected int color;
-    protected bool hasMoved=false;
 
+    protected int MAX_MOVEMENT;
     protected string pieceName;
     protected Move[] _legalMoves;
     
@@ -21,7 +21,7 @@ public abstract class Piece : MonoBehaviour{
     abstract public void GenerateLegalMoves(Piece[,] board);
 
     
-    public void Init(int file, int rank, int color, BoardUIManager boardManager ){
+    public void Init(int file, int rank, int color){
         this.rank = rank;
         this.file = file;
         this.color = color;
@@ -42,12 +42,6 @@ public abstract class Piece : MonoBehaviour{
 
     public string GetName(){return this.pieceName;} 
     public void SetName(string pieceName){this.pieceName=pieceName;} 
-    public void SetHasMoved(){
-        hasMoved = true;
-    }
-    public bool GetHasMoved(){
-        return hasMoved;
-    }
     public Move[] GetLegalMoves(){
         return _legalMoves;
     }

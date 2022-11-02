@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using System.Threading;
-
-public class BoardUIManager : MonoBehaviour{
+public class BoardManager : MonoBehaviour{
     [SerializeField] private int _width = 8;
     [SerializeField] private int _height = 8;
     [SerializeField] private Square _squarePrefab;
@@ -16,33 +14,31 @@ public class BoardUIManager : MonoBehaviour{
     [SerializeField] private Rook _rookPrefab;
     [SerializeField] private Queen _queenPrefab;
     [SerializeField] private King _kingPrefab;
-
-
-    private int _halfMoveCounter;
-    private int _fullMoveCounter;
     Piece prefab;
-    
-    Player[] players;
-    private Player _currPlayer; 
-
     public Piece selectedPiece = null;
     public Piece selectedEmptySquare = null;
     public Piece otherSelectedPiece = null;
-    public Piece[,] board;
+    private Piece[,] _board;
+    public Piece[,] Board{
+        get{return _board;}
+        set{_board = value;}
+    }
+
 
     void Awake(){
-        this.board = new Piece[_height, _width];
-        this.players = new Player[] {new Player(), new Player()};
-        this._currPlayer = players[0];
+        this._board = new Piece[_height, _width];
         Debug.Log("Generating squares:");
         GenerateSquares();
         Debug.Log("End generating squares:");
 
         Debug.Log("Setting board FEN:");
         
-        ReadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        // ReadFEN("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
+        // ReadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        // ReadFEN("2k5/1p6/8/4B3/8/8/8/4K3 w - - 0 1");
+        // ReadFEN("1k6/6p1/8/8/4N3/8/8/1K6 w - - 0 1");
+        ReadFEN("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
         Debug.Log("End setting board");
+        // FlipBoard();
         
     }
 
@@ -71,10 +67,10 @@ public class BoardUIManager : MonoBehaviour{
         var generatedPiece = Instantiate(prefab, new Vector3(file,rank,-1), Quaternion.identity);
         // generatedPiece.name = $"{name}:({x},{y})";
         generatedPiece.name = $"Piece:({file},{rank})";
-        generatedPiece.Init(file,rank,color, this);
+        generatedPiece.Init(file,rank,color);
         generatedPiece.SetName(name);
 
-        board[file, rank] = generatedPiece;
+        Board[file, rank] = generatedPiece;
         
         return generatedPiece;
     }
@@ -82,13 +78,13 @@ public class BoardUIManager : MonoBehaviour{
     private void _FenToPiecePlacement(string fen){
         int index = 0;
         int x = 0;
-        int y = 0;
+        int y = 7;
         char curr;
         int color;
         
         while (index<fen.Length){
             curr = fen[index];
-            color = char.IsLower(curr)? 0 : 1;
+            color = char.IsLower(curr)? 1 : 0;
             
             index++;
             
@@ -101,7 +97,7 @@ public class BoardUIManager : MonoBehaviour{
                 case 'q': PutPiece(5,x,y,color); x++; break;
                 case 'k': PutPiece(6,x,y,color); x++; break;
                 case 'p': PutPiece(1,x,y,color); x++; break;
-                case '/': y++; x=0; break;
+                case '/': y--; x=0; break;
                 // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
             }
         }
@@ -112,7 +108,7 @@ public class BoardUIManager : MonoBehaviour{
         _FenToPiecePlacement(fen_parts[0]);
 
         // second part: active color (current player)
-        _currPlayer = char.ToString('w')==fen_parts[1]? players[0] : players[1];
+        // _currPlayer = char.ToString('w')==fen_parts[1]? players[0] : players[1];
 
         // TODO: rest parts
         // third part: castling ability
@@ -120,15 +116,15 @@ public class BoardUIManager : MonoBehaviour{
         // fourth part: enpassant for next move is legal
 
         // fifth part: half move counter
-        int.TryParse(fen_parts[4], out this._halfMoveCounter);
+        // int.TryParse(fen_parts[4], out this._halfMoveCounter);
         
         // sixth part: full move counter
-        int.TryParse(fen_parts[5], out this._fullMoveCounter);
+        // int.TryParse(fen_parts[5], out this._fullMoveCounter);
         
     }
     public void MovePiece(int from_x, int from_y, int to_x, int to_y, bool isCapture){
-        board[to_x, to_y] = board[from_x, from_y];
-        board[from_x, from_y] = null;
+        Board[to_x, to_y] = Board[from_x, from_y];
+        Board[from_x, from_y] = null;
 
         GameObject pieceObj = GameObject.Find($"Piece:({from_x},{from_y})");
         
@@ -139,8 +135,8 @@ public class BoardUIManager : MonoBehaviour{
         
         pieceObj.transform.position = new Vector3(to_x, to_y, -1);
         pieceObj.name = $"Piece:({to_x},{to_y})";
-        board[to_x,to_y].SetFile(to_x);
-        board[to_x,to_y].SetRank(to_y);
+        Board[to_x,to_y].SetFile(to_x);
+        Board[to_x,to_y].SetRank(to_y);
     }
     static public void PrintBoard(Piece[,] board){
         string s = "";
@@ -168,9 +164,9 @@ public class BoardUIManager : MonoBehaviour{
         int square_y = y / 80;
         if (x%80>15 && x%80<65 && y%80>15 && y%80<65 && square_x<8 && square_y<8){
             // guarded area
-            CheckClicking(board, square_x, square_y);
+            CheckClicking(Board, square_x, square_y);
             if (selectedPiece != null){
-                selectedPiece.GenerateLegalMoves(this.board); 
+                selectedPiece.GenerateLegalMoves(this.Board); 
             }
             
         }
@@ -207,5 +203,19 @@ public class BoardUIManager : MonoBehaviour{
         selectedPiece = null;
         otherSelectedPiece = null;
         return ;
+    }
+
+    void FlipBoard(){
+        var rotationVector = _cam.transform.rotation.eulerAngles;
+        rotationVector.z = 180;
+        _cam.transform.rotation = Quaternion.Euler(rotationVector);
+        for (int i=0; i<8; i++){
+            for(int j=0; j<8; j++){
+                if (Board[i,j] != null){
+                    GameObject go = GameObject.Find($"Piece:({i},{j})");
+                    go.transform.rotation = Quaternion.Euler(rotationVector);
+                }
+            }
+        }
     }
 }   
