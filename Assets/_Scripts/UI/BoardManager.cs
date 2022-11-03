@@ -14,6 +14,8 @@ public class BoardManager : MonoBehaviour{
     [SerializeField] private Rook _rookPrefab;
     [SerializeField] private Queen _queenPrefab;
     [SerializeField] private King _kingPrefab;
+    
+    static public BoardManager Instance;
     Piece prefab;
     public Piece selectedPiece = null;
     public Piece selectedEmptySquare = null;
@@ -26,6 +28,7 @@ public class BoardManager : MonoBehaviour{
 
 
     void Awake(){
+        Instance = this;
         this._board = new Piece[_height, _width];
         Debug.Log("Generating squares:");
         GenerateSquares();
@@ -85,9 +88,7 @@ public class BoardManager : MonoBehaviour{
         while (index<fen.Length){
             curr = fen[index];
             color = char.IsLower(curr)? 1 : 0;
-            
             index++;
-            
             if (char.IsDigit(curr))
                 x += curr - '0';
             switch (char.ToLower(curr)){
@@ -121,22 +122,6 @@ public class BoardManager : MonoBehaviour{
         // sixth part: full move counter
         // int.TryParse(fen_parts[5], out this._fullMoveCounter);
         
-    }
-    public void MovePiece(int from_x, int from_y, int to_x, int to_y, bool isCapture){
-        Board[to_x, to_y] = Board[from_x, from_y];
-        Board[from_x, from_y] = null;
-
-        GameObject pieceObj = GameObject.Find($"Piece:({from_x},{from_y})");
-        
-        if (isCapture){
-            Debug.Log("destroyed piece via capture");
-            Destroy(GameObject.Find($"Piece:({to_x},{to_y})"));
-        }
-        
-        pieceObj.transform.position = new Vector3(to_x, to_y, -1);
-        pieceObj.name = $"Piece:({to_x},{to_y})";
-        Board[to_x,to_y].SetFile(to_x);
-        Board[to_x,to_y].SetRank(to_y);
     }
     static public void PrintBoard(Piece[,] board){
         string s = "";
@@ -180,15 +165,15 @@ public class BoardManager : MonoBehaviour{
             // case 2: selecting a new square
             if (board[x, y] == null){
                 selectedEmptySquare = board[x, y];
-                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y))){
-                    MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, false);
+                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y)) && (int) GameState.Instance.CurrentPlayer == selectedPiece.GetColor()){
+                    GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, false);
                 }
             }
             // case 3: select another piece
             else if (board[x, y] != null){
                 otherSelectedPiece = board[x, y];
-                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y))){
-                    MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, true);
+                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y)) && (int) GameState.Instance.CurrentPlayer == selectedPiece.GetColor()){
+                    GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, true);
                 }
             }
             // Debug.Log($"Selected empty square: {selectedEmptySquare}");
