@@ -62,5 +62,4 @@ public class Knight : Piece{
                 _legalMoves[index++] = new CaptureMove(this,x-1, y+2);
         }
     }
-    
 }

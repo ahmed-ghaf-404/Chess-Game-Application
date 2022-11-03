@@ -33,10 +33,10 @@ public class BoardManager : MonoBehaviour{
 
         Debug.Log("Setting board FEN:");
         
-        // ReadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        ReadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         // ReadFEN("2k5/1p6/8/4B3/8/8/8/4K3 w - - 0 1");
         // ReadFEN("1k6/6p1/8/8/4N3/8/8/1K6 w - - 0 1");
-        ReadFEN("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
+        // ReadFEN("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
         Debug.Log("End setting board");
         // FlipBoard();
         

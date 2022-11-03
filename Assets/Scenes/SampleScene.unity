@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 1950855282}
   - component: {fileID: 1950855281}
   m_Layer: 0
-  m_Name: MoveManager
+  m_Name: GameState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -263,7 +263,7 @@ GameObject:
   - component: {fileID: 2079797742}
   - component: {fileID: 2079797743}
   m_Layer: 0
-  m_Name: BoardUIManager
+  m_Name: BoardManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,7 +293,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2079797739}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82691c5560a6c4c5c914997e78aa1ec1, type: 3}
+  m_Script: {fileID: 11500000, guid: 804b7ea934b8a47aeb776383548787ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _width: 8
@@ -307,7 +307,7 @@ MonoBehaviour:
   _queenPrefab: {fileID: 4124020808173810011, guid: f2303619c6c824616a625ab5fb82014d, type: 3}
   _kingPrefab: {fileID: 5422082308296062797, guid: 42089f1902d544c9aa5bc491a2759389, type: 3}
   selectedPiece: {fileID: 0}
-  selectedSquare: {fileID: 0}
+  selectedEmptySquare: {fileID: 0}
   otherSelectedPiece: {fileID: 0}
 --- !u!61 &2079797743
 BoxCollider2D:
