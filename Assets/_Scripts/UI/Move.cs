@@ -14,11 +14,6 @@ public abstract class Move{
         get{return _y;}
         set{_y = value;}
     }
-
-    
-    public bool isMove(int to_x, int to_y){
-        return to_x==_x && to_y==_y;
-    }
     public override string ToString(){
         return $"{_thisPiece}: ({_x},{_y})";
     }
@@ -37,6 +32,13 @@ class QuitMove : Move{
 
 class CaptureMove : Move{
     public CaptureMove(Piece p, int x, int y){
+        this._thisPiece = p;
+        this.X = x;
+        this.Y = y;
+    }
+}
+class CheckMove : Move{
+    public CheckMove(Piece p, int x, int y){
         this._thisPiece = p;
         this.X = x;
         this.Y = y;

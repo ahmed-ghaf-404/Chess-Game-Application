@@ -23,7 +23,6 @@ public class King : Piece{
                     }
                     else if (IsEnemy(board[x,y])){
                         _legalMoves[index++] = new CaptureMove(this, x,y);
-                        Debug.Log($"Capture on: {_legalMoves[index-1]}");
                     }
                 }
             }

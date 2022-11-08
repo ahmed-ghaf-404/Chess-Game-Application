@@ -66,13 +66,11 @@ public abstract class Piece : MonoBehaviour{
     }
     public bool IsLegalMove(Move other_move){
         foreach (var move in _legalMoves){
-            Debug.Log(move);
             if (move == null)
                 continue;
             else if (move.IsSameMove(other_move))
                 return true;
         }
-        Debug.Log("No legal moves found");
         return false;
     }
     

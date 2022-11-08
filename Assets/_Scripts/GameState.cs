@@ -12,6 +12,10 @@ public class GameState : MonoBehaviour{
     }
     // private int _halfMoveCounter = 0;
     private int _fullMoveCounter = 1; 
+    public int FullMoveCounter{
+        get{return _fullMoveCounter;}
+        set{_fullMoveCounter = value;}
+    }
 
     static public int num = 0;
 
@@ -30,6 +34,7 @@ public class GameState : MonoBehaviour{
         // detect movement
         if (_prevPlayer==_currentPlayer){
             SwitchCurrentPlayer();
+            BoardManager.Instance.GenerateAllLegalMoves();
         }
     }
 

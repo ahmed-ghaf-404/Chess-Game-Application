@@ -47,8 +47,13 @@ public class Pawn : Piece{
         for (int i=-1; i<2; i+=2){
             if (x+i>=0 && x+i<8 && y>=0 && y<8){
                 if (IsEnemy(board[x+i,y])){
-                    temp_move = new CaptureMove(this, x+i, y);
-                    _legalMoves[index++] = temp_move;
+                    if (board[x+i,y].GetType() == typeof(King)){
+                        _legalMoves[index++] = new CheckMove(this, x+i, y);
+                    }
+                    else{
+                        temp_move = new CaptureMove(this, x+i, y);
+                        _legalMoves[index++] = temp_move;
+                    }
                 }
             }
         }

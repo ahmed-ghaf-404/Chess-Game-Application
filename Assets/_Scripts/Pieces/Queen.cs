@@ -6,121 +6,44 @@ public class Queen : Piece{
         MAX_MOVEMENT = 27;
         SetName(pieceName);
     }
+    int CreateMove(Piece[,] board, int dx, int dy, int index){
+        int curr_x = GetFile() + dx;
+        int curr_y = GetRank() + dy;
+        while (curr_x>=0 && curr_x <8 && curr_y>=0 && curr_y<8){
+            if (board[curr_x, curr_y] == null){
+                _legalMoves[index++] = new QuitMove(this, curr_x, curr_y);
+            }
+            else{
+                if (IsEnemy(board[curr_x,curr_y])){
+                    if (board[curr_x, curr_y].GetType() == typeof(King)){
+                        _legalMoves[index++] = new CheckMove(this, curr_x, curr_y);
+                    }
+                    else{
+                        _legalMoves[index++] = new CaptureMove(this, curr_x, curr_y);
+                    }
+                }
+                break;
+            }
+
+            curr_x += dx;
+            curr_y += dy;
+        }
+        return index;
+    }
+
     override 
     public void GenerateLegalMoves(Piece[,] board){
         _legalMoves = new Move[MAX_MOVEMENT];
         int index = 0;
-        int x = GetFile();
-        int y = GetRank();
-        
-        // RIGHT
-        while (x<7){
-            if (board[++x,y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
+        foreach (int dx in new int[]{-1,1}){
+            foreach (int dy in new int[]{-1,1}){
+                index = CreateMove(board, dx, dy, index);
             }
         }
-        x = GetFile();
-        // LEFT
-        while (x>0){
-            if (board[--x,y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
-            }
+        foreach (int dx in new int[]{-1,1}){
+            index = CreateMove(board, dx, 0, index);
+            index = CreateMove(board, 0, dx, index);
         }
-        x = GetFile();
-        // UP
-        while (y<7){
-            if (board[x,++y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
-            }
-        }
-        y = GetRank();
-        // DOWN
-        while (y>0){
-            if (board[x,--y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
-            }
-        }
-        x = GetFile();
-        y = GetRank();
-
-        while (x<7 && y<7){
-            if (board[++x,++y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
-            }
-        }
-        x = GetFile();
-        y = GetRank();
-        // LEFT
-        while (x>0 && y>0){
-            if (board[--x,--y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
-            }
-        }
-        x = GetFile();
-        y = GetRank();
-        // UP
-        while (y<7 && x>0){
-            if (board[--x,++y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
-            }
-        }
-        x = GetFile();
-        y = GetRank();
-        // DOWN
-        while (y>0 && x<7){
-            if (board[++x,--y]==null){
-                _legalMoves[index++] = new QuitMove(this, x,y);
-            }
-            else{
-                if (IsEnemy(board[x,y])){
-                    _legalMoves[index++] = new CaptureMove(this, x, y);
-                }
-                break;
-            }
-        }
-        
     }
     
 }

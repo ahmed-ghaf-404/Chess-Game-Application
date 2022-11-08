@@ -44,7 +44,7 @@ public class BoardManager : MonoBehaviour{
         // FlipBoard();
 
         Debug.Log("generating all legal moves:");
-        // GenerateAllLegalMoves();
+        GenerateAllLegalMoves();
         Debug.Log("End generating all legal moves");
         
     }
@@ -124,7 +124,9 @@ public class BoardManager : MonoBehaviour{
         // int.TryParse(fen_parts[4], out this._halfMoveCounter);
         
         // sixth part: full move counter
-        // int.TryParse(fen_parts[5], out this._fullMoveCounter);
+        int temp;
+        int.TryParse(fen_parts[5], out temp);
+        GameState.Instance.FullMoveCounter = temp;
         
     }
     static public void PrintBoard(Piece[,] board){
@@ -154,20 +156,15 @@ public class BoardManager : MonoBehaviour{
         if (x%80>15 && x%80<65 && y%80>15 && y%80<65 && square_x<8 && square_y<8){
             // guarded area
             CheckClicking(Board, square_x, square_y);
-            
-
-            // ! HERE:
-            if (selectedPiece != null){
-                selectedPiece.GenerateLegalMoves(this.Board); 
-            }
-            
         }
     }
 
     public void GenerateAllLegalMoves(){
         foreach (var piece in Board){
             if (piece!=null){
-                piece.GenerateLegalMoves(Board);
+                if(piece.GetColor()==GameState.Instance.CurrentPlayer.Color){
+                    piece.GenerateLegalMoves(Board);
+                }
             }
         }
     }
@@ -191,12 +188,8 @@ public class BoardManager : MonoBehaviour{
                     GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, true);
                 }
             }
-            // Debug.Log($"Selected empty square: {selectedEmptySquare}");
-            // Debug.Log($"Selected another piece: {otherSelectedPiece}");
             ResetSelection();
         }
-        // Debug.Log($"Selected piece: {selectedPiece}");
-
     }
     void ResetSelection(){
         selectedEmptySquare = null;
