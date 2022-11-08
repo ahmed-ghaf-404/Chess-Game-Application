@@ -180,14 +180,14 @@ public class BoardManager : MonoBehaviour{
             // case 2: selecting a new square
             if (board[x, y] == null){
                 selectedEmptySquare = board[x, y];
-                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y))){//  && GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
+                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y)) && GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
                     GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, false);
                 }
             }
             // case 3: select another piece
             else if (board[x, y] != null){
                 otherSelectedPiece = board[x, y];
-                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y))){// } &&  GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
+                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y)) &&  GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
                     GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, true);
                 }
             }
