@@ -42,6 +42,10 @@ public class BoardManager : MonoBehaviour{
         // ReadFEN("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
         Debug.Log("End setting board");
         // FlipBoard();
+
+        Debug.Log("generating all legal moves:");
+        // GenerateAllLegalMoves();
+        Debug.Log("End generating all legal moves");
         
     }
 
@@ -150,10 +154,21 @@ public class BoardManager : MonoBehaviour{
         if (x%80>15 && x%80<65 && y%80>15 && y%80<65 && square_x<8 && square_y<8){
             // guarded area
             CheckClicking(Board, square_x, square_y);
+            
+
+            // ! HERE:
             if (selectedPiece != null){
                 selectedPiece.GenerateLegalMoves(this.Board); 
             }
             
+        }
+    }
+
+    public void GenerateAllLegalMoves(){
+        foreach (var piece in Board){
+            if (piece!=null){
+                piece.GenerateLegalMoves(Board);
+            }
         }
     }
     void CheckClicking(Piece[,] board, int x, int y){
@@ -165,14 +180,14 @@ public class BoardManager : MonoBehaviour{
             // case 2: selecting a new square
             if (board[x, y] == null){
                 selectedEmptySquare = board[x, y];
-                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y)) && (int) GameState.Instance.CurrentPlayer == selectedPiece.GetColor()){
+                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y))){//  && GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
                     GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, false);
                 }
             }
             // case 3: select another piece
             else if (board[x, y] != null){
                 otherSelectedPiece = board[x, y];
-                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y)) && (int) GameState.Instance.CurrentPlayer == selectedPiece.GetColor()){
+                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y))){// } &&  GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
                     GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, true);
                 }
             }

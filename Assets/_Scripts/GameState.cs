@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameState : MonoBehaviour{
     private Move[] _gameMoves;
-    private Player _currentPlayer = Player.White;
-    private Player _prevPlayer = Player.Black; // Will be used to detect change in players
-    
+    private Player _white = new Player(0);
+    private Player _black = new Player(1);
+    private Player _currentPlayer;
+    private Player _prevPlayer; // Will be used to detect change in players
     public Player CurrentPlayer{
         get{return _currentPlayer;}
         set{_currentPlayer = value;}
@@ -16,28 +15,31 @@ public class GameState : MonoBehaviour{
 
     static public int num = 0;
 
-    public enum Player{
-        White,
-        Black
-    }
+    // public enum Player{
+    //     White,
+    //     Black
+    // }
     public static GameState Instance;
     void Awake(){
         Instance = this;
+        _currentPlayer = _white;
+        _prevPlayer = _black;
     }
 
     void Update(){
         // detect movement
         if (_prevPlayer==_currentPlayer){
             SwitchCurrentPlayer();
+            // BoardManager.Instance.GenerateAllLegalMoves();
         }
     }
 
     private void SwitchCurrentPlayer(){
-        if (_currentPlayer==Player.White){
-            _currentPlayer = Player.Black;
+        if (_currentPlayer==_white){
+            _currentPlayer = _black;
             return ;
         }
-        _currentPlayer = Player.White;
+        _currentPlayer = _white;
         _fullMoveCounter++;
         return ;
     }

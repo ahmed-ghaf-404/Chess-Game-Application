@@ -35,7 +35,6 @@ public class Pawn : Piece{
         
         // 2- double push
         if (STARTING_RANK==GetRank() && board[x,y]==null){
-            Debug.Log(STARTING_RANK);
             y += MOVEMENT_OFSET;
             temp_move = new QuitMove(this, x, y);
             // Debug.Log(temp_move);
