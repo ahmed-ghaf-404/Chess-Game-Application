@@ -52,7 +52,7 @@ public class BoardManager : MonoBehaviour{
     void GenerateSquares(){
         for (int x=0; x < _width; x++){
             for (int y=0; y < _height; y++){
-                var generatedSquare = Instantiate(_squarePrefab, new Vector3(x,y), Quaternion.identity);
+                var generatedSquare = Instantiate(_squarePrefab, new Vector3(x,y), Quaternion.identity, GameObject.Find("Board").transform);
                 generatedSquare.name = $"Square:({x},{y})";
                 var isDarkSquare = (x + y) % 2 != 0;
                 generatedSquare.Init(isDarkSquare);
@@ -71,7 +71,7 @@ public class BoardManager : MonoBehaviour{
             case 5: prefab = _queenPrefab; name = "queen"; break;
             case 6: prefab = _kingPrefab; name = "king"; break;
         }
-        var generatedPiece = Instantiate(prefab, new Vector3(file,rank,-1), Quaternion.identity);
+        var generatedPiece = Instantiate(prefab, new Vector3(file,rank,-1), Quaternion.identity, GameObject.Find("Pieces").transform);
         // generatedPiece.name = $"{name}:({x},{y})";
         generatedPiece.name = $"Piece:({file},{rank})";
         generatedPiece.Init(file,rank,color);
