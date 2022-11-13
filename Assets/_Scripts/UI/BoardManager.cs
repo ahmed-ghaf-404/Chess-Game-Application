@@ -14,6 +14,8 @@ public class BoardManager : MonoBehaviour{
     [SerializeField] private Rook _rookPrefab;
     [SerializeField] private Queen _queenPrefab;
     [SerializeField] private King _kingPrefab;
+
+    private bool _isBoardRotated = false;
     
     static public BoardManager Instance;
     Piece prefab;
@@ -156,6 +158,8 @@ public class BoardManager : MonoBehaviour{
         if (x%80>15 && x%80<65 && y%80>15 && y%80<65 && square_x<8 && square_y<8){
             // guarded area
             CheckClicking(Board, square_x, square_y);
+            
+            if (_isBoardRotated){}
         }
     }
 
@@ -191,6 +195,7 @@ public class BoardManager : MonoBehaviour{
             ResetSelection();
         }
     }
+
     void ResetSelection(){
         selectedEmptySquare = null;
         selectedPiece = null;
@@ -198,16 +203,27 @@ public class BoardManager : MonoBehaviour{
         return ;
     }
 
-    void FlipBoard(){
+    public void FlipBoard(){
         var rotationVector = _cam.transform.rotation.eulerAngles;
-        rotationVector.z = 180;
+        if (rotationVector.z != 180){
+            rotationVector.z = 180;
+            _isBoardRotated = true;
+        }
+        else{
+            rotationVector.z = 0;
+            _isBoardRotated = false;
+        }
+
         _cam.transform.rotation = Quaternion.Euler(rotationVector);
         for (int i=0; i<8; i++){
             for(int j=0; j<8; j++){
+                GameObject go;
                 if (Board[i,j] != null){
-                    GameObject go = GameObject.Find($"Piece:({i},{j})");
+                    go = GameObject.Find($"Piece:({i},{j})");
                     go.transform.rotation = Quaternion.Euler(rotationVector);
                 }
+                go = GameObject.Find($"Square:({i},{j})");
+                go.transform.rotation = Quaternion.Euler(rotationVector);
             }
         }
     }

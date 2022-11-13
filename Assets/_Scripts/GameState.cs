@@ -6,6 +6,17 @@ public class GameState : MonoBehaviour{
     private Player _black = new Player(1);
     private Player _currentPlayer;
     private Player _prevPlayer; // Will be used to detect change in players
+    private Player _winner;
+    private bool _isGameOver;
+    private string _winReason;
+
+    public bool IsGameOver(){
+        return _isGameOver;
+    }
+    public void SetGameOver(bool b, string s){
+        _isGameOver = b;
+    }
+
     public Player CurrentPlayer{
         get{return _currentPlayer;}
         set{_currentPlayer = value;}
@@ -19,10 +30,7 @@ public class GameState : MonoBehaviour{
 
     static public int num = 0;
 
-    // public enum Player{
-    //     White,
-    //     Black
-    // }
+    [SerializeField] GameOverScreen GOS;
     public static GameState Instance;
     void Awake(){
         Instance = this;
@@ -35,6 +43,9 @@ public class GameState : MonoBehaviour{
         if (_prevPlayer==_currentPlayer){
             SwitchCurrentPlayer();
             BoardManager.Instance.GenerateAllLegalMoves();
+        }
+        if(IsGameOver()){
+            GOS.Setup(_winner.Color, _winReason);
         }
     }
 
@@ -62,5 +73,39 @@ public class GameState : MonoBehaviour{
         BoardManager.Instance.Board[to_x,to_y].SetFile(to_x);
         BoardManager.Instance.Board[to_x,to_y].SetRank(to_y);
         _prevPlayer = _currentPlayer;
+
+        // check for checks
+        IsCheck();
+        
+    }
+    bool IsCheck(){
+        for (int i=0; i<8; i++){
+            for (int j=0; j<8; j++){
+                var p = BoardManager.Instance.Board[i,j];
+                if (p!=null){
+                    p.GenerateLegalMoves(BoardManager.Instance.Board);
+                    foreach (var move in p.GetLegalMoves()){
+                        if (move!=null){
+                            if (typeof(CheckMove)==move.GetType()){
+                                if (p.GetColor()==_currentPlayer.Color){
+                                    _currentPlayer.IncreaseScore();
+                                    return true;
+                                }
+                                else{
+                                    _winner = _prevPlayer;
+                                    _winReason = "Don't hang your king!";
+                                    _isGameOver = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public void SetWinner(Player p){
+        _winner = p;
     }
 }
