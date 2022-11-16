@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+
 
 public class Player{
     private bool _isCheck;
@@ -20,5 +18,8 @@ public class Player{
             GameState.Instance.SetWinner(this);
             GameState.Instance.SetGameOver(true, "3 checks!");
         }
+    }
+    public int GetScore(){
+        return _score;
     }
 }

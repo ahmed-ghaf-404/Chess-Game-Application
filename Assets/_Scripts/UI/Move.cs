@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public abstract class Move{
     protected Piece _thisPiece;
     private int _x; // x coordinate of the target square

@@ -15,6 +15,7 @@ public class GameState : MonoBehaviour{
     }
     public void SetGameOver(bool b, string s){
         _isGameOver = b;
+        _winReason = s;
     }
 
     public Player CurrentPlayer{
@@ -45,7 +46,12 @@ public class GameState : MonoBehaviour{
             BoardManager.Instance.GenerateAllLegalMoves();
         }
         if(IsGameOver()){
-            GOS.Setup(_winner.Color, _winReason);
+            try
+            {
+                GOS.Setup(_winner.Color, _winReason);   
+            }
+            catch (System.Exception){   
+            }
         }
     }
 
@@ -86,9 +92,24 @@ public class GameState : MonoBehaviour{
                     p.GenerateLegalMoves(BoardManager.Instance.Board);
                     foreach (var move in p.GetLegalMoves()){
                         if (move!=null){
-                            if (typeof(CheckMove)==move.GetType()){
-                                if (p.GetColor()==_currentPlayer.Color){
+                            if (typeof(CheckMove) == move.GetType()){
+                                if (p.GetColor() == _currentPlayer.Color){
+                                    // then it is a check!
+                                    int rank;
+                                    int color = _currentPlayer.Color==0? 1: 0;
+                                    
+                                    if (color==1){
+                                        // if the color of the king is black, then it's white's check!
+                                        // white starts at 0
+                                        rank = _currentPlayer.GetScore();
+                                    }
+                                    else{
+                                        // black start from 7
+                                        rank = 7 - _currentPlayer.GetScore();
+                                    }
+                                    BoardManager.Instance.PutPiece(6, -1, rank, color);
                                     _currentPlayer.IncreaseScore();
+
                                     return true;
                                 }
                                 else{
@@ -108,4 +129,5 @@ public class GameState : MonoBehaviour{
     public void SetWinner(Player p){
         _winner = p;
     }
+    
 }

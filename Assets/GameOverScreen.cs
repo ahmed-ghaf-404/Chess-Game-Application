@@ -6,11 +6,15 @@ public class GameOverScreen : MonoBehaviour{
     public Text Winner;
     public void Setup(int winner, string reason){
         gameObject.SetActive(true);
-        Winner.text = winner==0? $"White wins: {reason}" : $"Black wins: {reason}";
+        Winner.text = winner==0?    $"White wins: {reason}" :
+                                    $"Black wins: {reason}";
+        
     }
 
-    public void RestartButton(){
-        SceneManager.LoadScene("WhiteGame");
+    void Update(){
+        if (Input.GetKey("space")){
+            SceneManager.LoadScene(0);
+        }
     }
 
     public void ExitButton(){

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FlipBoardButton : MonoBehaviour{
@@ -12,6 +10,7 @@ public class FlipBoardButton : MonoBehaviour{
 
     void Awake(){
         // make it visible
+        gameObject.SetActive(true);
         _currentSide = Side.White;
     }
 

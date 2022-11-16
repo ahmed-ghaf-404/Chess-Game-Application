@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour{
     [SerializeField] private int _width = 8;
@@ -62,7 +60,7 @@ public class BoardManager : MonoBehaviour{
         }
         _cam.transform.position = new Vector3((float) _width*0.43f, (float) _height*0.43f, -10);
     }
-    Piece PutPiece(int piece, int file, int rank, int color){
+    public Piece PutPiece(int piece, int file, int rank, int color){
         string name = "";
         switch (piece){
             case 0: return null;
@@ -74,12 +72,16 @@ public class BoardManager : MonoBehaviour{
             case 6: prefab = _kingPrefab; name = "king"; break;
         }
         var generatedPiece = Instantiate(prefab, new Vector3(file,rank,-1), Quaternion.identity, GameObject.Find("Pieces").transform);
-        // generatedPiece.name = $"{name}:({x},{y})";
+        
+        // 
         generatedPiece.name = $"Piece:({file},{rank})";
         generatedPiece.Init(file,rank,color);
-        generatedPiece.SetName(name);
-
-        Board[file, rank] = generatedPiece;
+        
+        if (file>=0 && file<8 && rank>=0 && rank<8){
+            // this settings are only for playable pieces ON THE BOARD
+            generatedPiece.SetName(name);
+            Board[file, rank] = generatedPiece;
+        }
         
         return generatedPiece;
     }
@@ -226,5 +228,12 @@ public class BoardManager : MonoBehaviour{
                 go.transform.rotation = Quaternion.Euler(rotationVector);
             }
         }
+    }
+    public void ShowPieces(){
+        GameObject pieces = GameObject.FindGameObjectWithTag("pieces");
+        if (pieces != null)
+            pieces.SetActive(true);
+        else
+            Debug.Log("Pieces is null");
     }
 }   
