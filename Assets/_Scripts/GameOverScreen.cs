@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using UnityEngine.UI;
+using UnityEditor;
 
 public class GameOverScreen : MonoBehaviour{
     public TMP_Text _winner;
@@ -14,8 +14,8 @@ public class GameOverScreen : MonoBehaviour{
     }
 
     void Update(){
-        if (Input.GetKey("space")){
-            SceneManager.LoadScene(0);
+        if (Input.GetKeyUp("space")){
+            SceneManager.LoadScene("Tutorial");
         }
     }
 }

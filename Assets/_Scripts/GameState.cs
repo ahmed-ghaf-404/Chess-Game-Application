@@ -93,7 +93,13 @@ public class GameState : MonoBehaviour{
                     foreach (var move in p.GetLegalMoves()){
                         if (move!=null){
                             if (typeof(CheckMove) == move.GetType()){
-                                if (p.GetColor() == _currentPlayer.Color){
+                                if (p.GetColor() != _currentPlayer.Color){
+                                    // Debug.Log($"{p.GetColor()} == {_currentPlayer.Color}");
+                                    _winner = _prevPlayer;
+                                    _winReason = "Don't hang your king!";
+                                    _isGameOver = true;
+                                }
+                                else{
                                     // then it is a check!
                                     int rank;
                                     int color = _currentPlayer.Color==0? 1: 0;
@@ -111,12 +117,6 @@ public class GameState : MonoBehaviour{
                                     _currentPlayer.IncreaseScore();
 
                                     return true;
-                                }
-                                else{
-                                    Debug.Log($"{p.GetColor()} == {_currentPlayer.Color}");
-                                    _winner = _prevPlayer;
-                                    _winReason = "Don't hang your king!";
-                                    _isGameOver = true;
                                 }
                             }
                         }

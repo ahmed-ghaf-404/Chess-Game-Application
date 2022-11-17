@@ -361,15 +361,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2455588412224518326, guid: d0488a190eb344be5a323e8d9c1991a8, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.8
+      value: 1.85
       objectReference: {fileID: 0}
     - target: {fileID: 2455588412224518326, guid: d0488a190eb344be5a323e8d9c1991a8, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.8
+      value: 1.85
       objectReference: {fileID: 0}
     - target: {fileID: 2455588412224518326, guid: d0488a190eb344be5a323e8d9c1991a8, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.8
+      value: 1.85
       objectReference: {fileID: 0}
     - target: {fileID: 2455588412224518326, guid: d0488a190eb344be5a323e8d9c1991a8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -429,7 +429,7 @@ PrefabInstance:
         To win, check the enemy king thrice\n4- Leaving king in danger is instant
         loss\n5- The game will allow you to hang your king**\n\n* Except promotions,
         en passant, \n  and castling as for Ver1.0\n \n** Check the README for salty
-        origin story :(\n\n\n\n\t  ~~Click Space to start a game~~\n\n\nVer1.0"
+        origin story :(\n\n\n\t  ~~Press Space to start a game~~\n\nVer1.0"
       objectReference: {fileID: 0}
     - target: {fileID: 2455588413907949255, guid: d0488a190eb344be5a323e8d9c1991a8, type: 3}
       propertyPath: m_fontSize
