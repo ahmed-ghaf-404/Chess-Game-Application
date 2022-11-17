@@ -41,7 +41,7 @@ public class GameState : MonoBehaviour{
 
     void Update(){
         // detect movement
-        if (_prevPlayer==_currentPlayer){
+        if (_prevPlayer==_currentPlayer && !_isGameOver){
             SwitchCurrentPlayer();
             BoardManager.Instance.GenerateAllLegalMoves();
         }
@@ -88,7 +88,7 @@ public class GameState : MonoBehaviour{
         for (int i=0; i<8; i++){
             for (int j=0; j<8; j++){
                 var p = BoardManager.Instance.Board[i,j];
-                if (p!=null){
+                if (p!=null && !_isGameOver){
                     p.GenerateLegalMoves(BoardManager.Instance.Board);
                     foreach (var move in p.GetLegalMoves()){
                         if (move!=null){
@@ -113,6 +113,7 @@ public class GameState : MonoBehaviour{
                                     return true;
                                 }
                                 else{
+                                    Debug.Log($"{p.GetColor()} == {_currentPlayer.Color}");
                                     _winner = _prevPlayer;
                                     _winReason = "Don't hang your king!";
                                     _isGameOver = true;

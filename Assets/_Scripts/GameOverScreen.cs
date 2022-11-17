@@ -1,13 +1,15 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
 
 public class GameOverScreen : MonoBehaviour{
-    public Text Winner;
+    public TMP_Text _winner;
     public void Setup(int winner, string reason){
         gameObject.SetActive(true);
-        Winner.text = winner==0?    $"White wins: {reason}" :
+        _winner.text = winner==0?    $"White wins: {reason}" :
                                     $"Black wins: {reason}";
+        BoardManager.Instance.ClearAllLegalMoves();
         
     }
 
@@ -16,9 +18,4 @@ public class GameOverScreen : MonoBehaviour{
             SceneManager.LoadScene(0);
         }
     }
-
-    public void ExitButton(){
-        Application.Quit();
-    }
-    
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class BoardManager : MonoBehaviour{
     [SerializeField] private int _width = 8;
@@ -21,6 +22,9 @@ public class BoardManager : MonoBehaviour{
     public Piece selectedEmptySquare = null;
     public Piece otherSelectedPiece = null;
     private Piece[,] _board;
+
+    [SerializeField] private TMP_Text _tempText = null;
+
     public Piece[,] Board{
         get{return _board;}
         set{_board = value;}
@@ -50,6 +54,8 @@ public class BoardManager : MonoBehaviour{
     }
 
     void GenerateSquares(){
+        var camX = _cam.transform.position.x;
+        var camY = _cam.transform.position.y;
         for (int x=0; x < _width; x++){
             for (int y=0; y < _height; y++){
                 var generatedSquare = Instantiate(_squarePrefab, new Vector3(x,y), Quaternion.identity, GameObject.Find("Board").transform);
@@ -58,7 +64,7 @@ public class BoardManager : MonoBehaviour{
                 generatedSquare.Init(isDarkSquare);
             }
         }
-        _cam.transform.position = new Vector3((float) _width*0.43f, (float) _height*0.43f, -10);
+        _cam.transform.position = new Vector3((float) _width*0.45f, (float) _height*0.45f, -10);
     }
     public Piece PutPiece(int piece, int file, int rank, int color){
         string name = "";
@@ -149,17 +155,15 @@ public class BoardManager : MonoBehaviour{
     }
 
     void OnMouseDown(){
-        var x = (int) Input.mousePosition.x - 85;
-        var y = (int) Input.mousePosition.y - 80;
+        Vector3 localPosition = Input.mousePosition;
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(localPosition);
 
-        // first square aka (0,0):
-        // x: 0~80
-        // y: 0~80
-        int square_x = x / 80;
-        int square_y = y / 80;
-        if (x%80>15 && x%80<65 && y%80>15 && y%80<65 && square_x<8 && square_y<8){
+        var x = worldPosition.x + 0.5f;
+        var y = worldPosition.y + 0.5f;
+        _tempText.text = $"({x},{y}), ({localPosition.x},{localPosition.y})";
+        if (x>=0 && x<8 && y>=0 && y<8){
             // guarded area
-            CheckClicking(Board, square_x, square_y);
+            CheckClicking(Board, (int)x, (int)y);
             
             if (_isBoardRotated){}
         }
@@ -235,5 +239,13 @@ public class BoardManager : MonoBehaviour{
             pieces.SetActive(true);
         else
             Debug.Log("Pieces is null");
+    }
+
+    public void ClearAllLegalMoves(){
+        foreach (var piece in Board){
+            if (piece!=null){
+                piece.ClearLegalMoves();
+            }
+        }
     }
 }   

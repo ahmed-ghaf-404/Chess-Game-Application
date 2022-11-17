@@ -73,5 +73,8 @@ public abstract class Piece : MonoBehaviour{
         }
         return false;
     }
+    public void ClearLegalMoves(){
+        _legalMoves = new Move[1];
+    }
     
 }
