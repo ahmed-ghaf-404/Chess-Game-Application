@@ -19,3 +19,22 @@ public/piece/staunty | sadsnake1 | [CC BY-NC-SA 4.0](https://creativecommons.org
 public/piece/dubrovny | sadsnake1 | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 public/piece/libra | sadsnake1 | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 public/piece/anarcandy | [caderek](https://github.com/caderek) | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+
+Notes:
+To move pieces, click the piece then the square you want to move that piece to
+
+Press Space to skip text boxes
+
+To win attack the opponent king 3 times
+
+The game will allow you to hang your king, and that will be immediate loss:
+
+Breaking absolute pins
+
+Not protecting your king while in check
+
+Special case: if white checked black, and black delivered a final checkmate, THEN white wins because black didn't care about their king safety and hung it
+
+
+
