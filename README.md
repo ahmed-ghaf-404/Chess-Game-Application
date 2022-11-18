@@ -39,18 +39,10 @@ Special case: if white checked black, and black delivered a final checkmate, THE
 
 
 ### Salty origin story:
-In the evening on September/4/2022, I played my first rapid rated chess tournament at the St. Louis Chess Club. My very first game was against a fellow Indiana University student who I had just met earlier in STL, coincidentally. Rated 400 ELO points than my opponent, my chances of winning the game were only 9.09%.*
+In the evening on September/4/2022, I played my first rapid rated chess tournament at the St. Louis Chess Club. My very first game was against a fellow Indiana University student who I had just met earlier in STL, coincidentally. Rated 400 ELO points than my opponent, my chances of winning the game were only 9.09%. https://www.318chess.com/elo.html
 
 However, I managed to outplay my opponent who wasn't familiar with "Caro-Kann Advanced 3...c5" variation. The only problem was that I was getting low on time. And in a messy (REALLY MESSY) time scramble, all the other players and audience were watching our game; we were the last board of the round. As I kept getting lower and lower on time, my opponent kept putting more pressure on my position. And I accidentally moved my king to e3 which was covered by an enemy pawn. Therefore, I hung my king.. The arbiter saw it but decided not to stop us as we were really just throwing moves hoping not to lose on time. I left my king in check for yet another move. And as I hit the clock, I dropped my king as a sign of resignation.
 
 It was a sad game, and I'm still salty about that loss.  
 
 That's why I decided to allow players to hang their kings in this game, at their own expense of course!
-
-
-
-
-* https://www.318chess.com/elo.html
-
-
-
