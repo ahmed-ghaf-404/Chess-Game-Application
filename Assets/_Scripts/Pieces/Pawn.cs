@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Pawn : Piece{
     private int MOVEMENT_OFSET;
-    private int STARTING_RANK;
 
     Pawn(){
         // ? INFO/Question: Is this important??
@@ -14,7 +13,6 @@ public class Pawn : Piece{
     override 
     public void GenerateLegalMoves(Piece[,] board){
         this.MOVEMENT_OFSET = GetColor()==0? 1: -1;
-        STARTING_RANK = GetColor()==0? 1: 6;
 
         Move temp_move;
         int x = GetFile();
@@ -28,15 +26,15 @@ public class Pawn : Piece{
         
         // check if there's a piece on (x,y)
         if (board[x,y]==null){
-            temp_move = new QuitMove(this, x, y);
+            temp_move = new Move(this, x, y, "quite");
             // Debug.Log(temp_move);
             _legalMoves[index++] = temp_move;
         }
         
         // 2- double push
-        if (STARTING_RANK==GetRank() && board[x,y]==null){
+        if (!HasMoved && board[x,y]==null){
             y += MOVEMENT_OFSET;
-            temp_move = new QuitMove(this, x, y);
+            temp_move = new Move(this, x, y, "quite");
             // Debug.Log(temp_move);
             _legalMoves[index++] = temp_move;
         }
@@ -48,10 +46,10 @@ public class Pawn : Piece{
             if (x+i>=0 && x+i<8 && y>=0 && y<8){
                 if (IsEnemy(board[x+i,y])){
                     if (board[x+i,y].GetType() == typeof(King)){
-                        _legalMoves[index++] = new CheckMove(this, x+i, y);
+                        _legalMoves[index++] = new Move(this, x+i, y, "check");
                     }
                     else{
-                        temp_move = new CaptureMove(this, x+i, y);
+                        temp_move = new Move(this, x+i, y, "capture");
                         _legalMoves[index++] = temp_move;
                     }
                 }

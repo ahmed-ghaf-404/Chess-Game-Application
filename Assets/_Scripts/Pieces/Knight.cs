@@ -10,14 +10,14 @@ public class Knight : Piece{
         if (x>=0 && x<8 && y>=0 && y<8){
             // within board
             if (board[x,y] == null){
-                _legalMoves[index++] = new QuitMove(this,x, y);
+                _legalMoves[index++] = new Move(this,x, y, "quite");
             }
             else if (IsEnemy(board[x,y])){
                 if (board[x,y].GetType() == typeof(King)){
-                    _legalMoves[index++] = new CheckMove(this,x, y);
+                    _legalMoves[index++] = new Move(this,x, y, "check");
                 }
                 else{
-                    _legalMoves[index++] = new CaptureMove(this,x, y);
+                    _legalMoves[index++] = new Move(this,x, y, "capture");
                 }
             }
         }

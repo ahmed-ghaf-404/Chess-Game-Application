@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -5,6 +6,7 @@ using UnityEngine;
 public abstract class Piece : MonoBehaviour{
        
     [SerializeField] Sprite _black;
+    public static string[] MoveTypes = {"check", "capture", "quite", "shortCastling", "longCastling"};
     protected int file;
     protected int rank;
     protected int color;
@@ -12,6 +14,11 @@ public abstract class Piece : MonoBehaviour{
     protected int MAX_MOVEMENT;
     protected string pieceName;
     protected Move[] _legalMoves;
+    protected bool _hasMoved;
+    public bool HasMoved{
+        get{return _hasMoved;}
+        set{_hasMoved = value;}
+    }
     
     SpriteRenderer spriteRenderer;
     public void Awake(){
@@ -54,10 +61,6 @@ public abstract class Piece : MonoBehaviour{
         return GetColor()!=other.GetColor();
     }
 
-    public void DestroyPiece(){
-        Destroy(this.gameObject);
-    }
-
     public string PieceString(){
         return $"{color} {pieceName}: ({rank},{file})";
     }
@@ -75,6 +78,42 @@ public abstract class Piece : MonoBehaviour{
     }
     public void ClearLegalMoves(){
         _legalMoves = new Move[1];
+    }
+
+    Vector3 GetMousePosition(){
+        var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0;
+        return mousePosition;
+    }
+    void OnMouseDrag(){
+        if(GameState.Instance.RuntimeData.CurrentPlayer.Color == color && !GameState.Instance.RuntimeData.isGameOver){
+            var pos = GetMousePosition();
+            pos.z = -0.5f;
+            transform.position = pos;
+        }
+    }
+    void OnMouseUp(){
+        if(GameState.Instance.RuntimeData.CurrentPlayer.Color == color && !GameState.Instance.RuntimeData.isGameOver){
+            var piecePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var x = (int) Math.Round(piecePosition.x, MidpointRounding.AwayFromZero);
+            var y = (int) Math.Round(piecePosition.y, MidpointRounding.AwayFromZero);
+            var moved = false;
+            Move temp;
+            foreach (string moveType in MoveTypes){
+                temp = new Move(this, x, y, moveType);
+                if (IsLegalMove(temp)){
+                    GameState.Instance.MovePiece(temp);
+                    GameState.Instance.SwitchCurrentPlayer();
+                    BoardManager.Instance.GenerateAllLegalMoves();
+                    HasMoved = true;
+                    moved = true;
+                }    
+            }
+            
+            if (!moved){
+                gameObject.transform.position = new Vector3(GetFile(), GetRank(), 0);
+            }
+        }
     }
     
 }

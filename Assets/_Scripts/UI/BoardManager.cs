@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
 
 public class BoardManager : MonoBehaviour{
     [SerializeField] private int _width = 8;
@@ -14,16 +15,13 @@ public class BoardManager : MonoBehaviour{
     [SerializeField] private Queen _queenPrefab;
     [SerializeField] private King _kingPrefab;
 
-    private bool _isBoardRotated = false;
+    [SerializeField] RuntimeData _runtimeData;
+
     
     static public BoardManager Instance;
     Piece prefab;
-    public Piece selectedPiece = null;
-    public Piece selectedEmptySquare = null;
-    public Piece otherSelectedPiece = null;
     private Piece[,] _board;
 
-    [SerializeField] private TMP_Text _tempText = null;
 
     public Piece[,] Board{
         get{return _board;}
@@ -33,38 +31,45 @@ public class BoardManager : MonoBehaviour{
 
     void Awake(){
         Instance = this;
+        _runtimeData.White = new Player(0);
+        _runtimeData.Black = new Player(1);
+
         this._board = new Piece[_height, _width];
         // Debug.Log("Generating squares:");
         GenerateSquares();
         // Debug.Log("End generating squares:");
-
-        // Debug.Log("Setting board FEN:");
         
-        ReadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        // ReadFEN("2k5/1p6/8/4B3/8/8/8/4K3 w - - 0 1");
-        // ReadFEN("1k6/6p1/8/8/4N3/8/8/1K6 w - - 0 1");
-        // ReadFEN("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
+        // Debug.Log("Setting board FEN:");
+        // _runtimeData.FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        _runtimeData.FEN = "r3k2r/pppqppbp/2np1np1/5b2/5B2/2NP1NP1/PPPQPPBP/R3K2R w KQkq - 6 8";
+        ReadFEN(_runtimeData.FEN);
         // Debug.Log("End setting board");
         // FlipBoard();
 
         // Debug.Log("generating all legal moves:");
         GenerateAllLegalMoves();
         // Debug.Log("End generating all legal moves");
-        
+
+        ResetRuntimeData();
+    }
+    void ResetRuntimeData(){
+        _runtimeData.halfMoveNum = 0;
+        _runtimeData.moveNum = 0;
+    }
+    void Start(){
+        SoundManager.PlaySound("notification");
     }
 
     void GenerateSquares(){
-        var camX = _cam.transform.position.x;
-        var camY = _cam.transform.position.y;
         for (int x=0; x < _width; x++){
             for (int y=0; y < _height; y++){
-                var generatedSquare = Instantiate(_squarePrefab, new Vector3(x,y), Quaternion.identity, GameObject.Find("Board").transform);
+                var generatedSquare = Instantiate(_squarePrefab, new Vector3(x,y,1), Quaternion.identity, GameObject.Find("Board").transform);
                 generatedSquare.name = $"Square:({x},{y})";
                 var isDarkSquare = (x + y) % 2 != 0;
                 generatedSquare.Init(isDarkSquare);
             }
         }
-        _cam.transform.position = new Vector3((float) _width*0.45f, (float) _height*0.45f, -10);
+        _cam.transform.position = new Vector3((float) _width*0.45f, (float) _height*0.45f, -1);
     }
     public Piece PutPiece(int piece, int file, int rank, int color){
         string name = "";
@@ -77,7 +82,7 @@ public class BoardManager : MonoBehaviour{
             case 5: prefab = _queenPrefab; name = "queen"; break;
             case 6: prefab = _kingPrefab; name = "king"; break;
         }
-        var generatedPiece = Instantiate(prefab, new Vector3(file,rank,-1), Quaternion.identity, GameObject.Find("Pieces").transform);
+        var generatedPiece = Instantiate(prefab, new Vector3(file,rank,0), Quaternion.identity, GameObject.Find("Pieces").transform);
         
         // 
         generatedPiece.name = $"Piece:({file},{rank})";
@@ -117,26 +122,66 @@ public class BoardManager : MonoBehaviour{
             }
         }
     }
+    void ParseCaslting(string castling){
+        foreach (char c in castling){
+            switch (c){
+                case 'K':  
+                    if (Board[4,0]!=null){
+                        if (Board[4,0].GetType() == typeof(King))
+                            _runtimeData.White.CanCastleShort = true; 
+                    }
+                    else{
+                        _runtimeData.Black.CanCastleShort = true; 
+                    }
+                    break;
+                case 'Q':  
+                    if (Board[4,0] != null)
+                        if (Board[4,0].GetType() == typeof(King)){
+                            _runtimeData.White.CanCastleLong = true; 
+                        }
+                        else{
+                            _runtimeData.Black.CanCastleLong = false; 
+                        }
+                    break;
+                case 'k':  
+                    if (Board[4,7] != null)
+                        if (Board[4,7].GetType() == typeof(King)){
+                            _runtimeData.Black.CanCastleShort = true; 
+                        }
+                        else{
+                            _runtimeData.Black.CanCastleShort = false; 
+                        }
+                    break;
+                case 'q':  
+                    if (Board[4,7] != null)
+                        if (Board[4,7].GetType() == typeof(King)){                        
+                            _runtimeData.Black.CanCastleLong = true; 
+                        }
+                        else{
+                            _runtimeData.Black.CanCastleLong = false; 
+                        }
+                    break;
+            }
+        }
+    }
     void ReadFEN(string fen){
         List<string> fen_parts = new List<string>(fen.Split(' '));
         // first part: piece placement
         _FenToPiecePlacement(fen_parts[0]);
 
         // second part: active color (current player)
-        // _currPlayer = char.ToString('w')==fen_parts[1]? players[0] : players[1];
-
-        // TODO: rest parts
+        _runtimeData.CurrentPlayer = char.ToString('w')==fen_parts[1]? _runtimeData.White : _runtimeData.Black;
+        
         // third part: castling ability
-
+        ParseCaslting(fen_parts[2]);
+        
         // fourth part: enpassant for next move is legal
 
         // fifth part: half move counter
-        // int.TryParse(fen_parts[4], out this._halfMoveCounter);
+        int.TryParse(fen_parts[4], out _runtimeData.halfMoveNum);
         
         // sixth part: full move counter
-        int temp;
-        int.TryParse(fen_parts[5], out temp);
-        GameState.Instance.FullMoveCounter = temp;
+        int.TryParse(fen_parts[5], out _runtimeData.moveNum);
         
     }
     static public void PrintBoard(Piece[,] board){
@@ -154,70 +199,23 @@ public class BoardManager : MonoBehaviour{
         Debug.Log(s);
     }
 
-    void OnMouseDown(){
-        Vector3 localPosition = Input.mousePosition;
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(localPosition);
-
-        var x = worldPosition.x + 0.5f;
-        var y = worldPosition.y + 0.5f;
-        _tempText.text = $"({x},{y}), ({localPosition.x},{localPosition.y})";
-        if (x>=0 && x<8 && y>=0 && y<8){
-            // guarded area
-            CheckClicking(Board, (int)x, (int)y);
-            
-            if (_isBoardRotated){}
-        }
-    }
-
     public void GenerateAllLegalMoves(){
         foreach (var piece in Board){
             if (piece!=null){
-                if(piece.GetColor()==GameState.Instance.CurrentPlayer.Color){
+                if(piece.GetColor()==_runtimeData.CurrentPlayer.Color){
                     piece.GenerateLegalMoves(Board);
                 }
             }
         }
-    }
-    void CheckClicking(Piece[,] board, int x, int y){
-        // case 1: selecting a new piece
-        if (selectedPiece == null && board[x, y] != null){
-            selectedPiece = board[x, y];
-        }
-        else if(selectedPiece != null){
-            // case 2: selecting a new square
-            if (board[x, y] == null){
-                selectedEmptySquare = board[x, y];
-                if (selectedPiece.IsLegalMove(new QuitMove(selectedPiece, x, y)) && GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
-                    GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, false);
-                }
-            }
-            // case 3: select another piece
-            else if (board[x, y] != null){
-                otherSelectedPiece = board[x, y];
-                if (selectedPiece.IsLegalMove(new CaptureMove(selectedPiece, x, y)) &&  GameState.Instance.CurrentPlayer.Color == selectedPiece.GetColor()){
-                    GameState.Instance.MovePiece(selectedPiece.GetFile(), selectedPiece.GetRank(), x, y, true);
-                }
-            }
-            ResetSelection();
-        }
-    }
-
-    void ResetSelection(){
-        selectedEmptySquare = null;
-        selectedPiece = null;
-        otherSelectedPiece = null;
-        return ;
     }
 
     public void FlipBoard(){
         var rotationVector = _cam.transform.rotation.eulerAngles;
         if (rotationVector.z != 180){
             rotationVector.z = 180;
-            _isBoardRotated = true;
         }
         else{
             rotationVector.z = 0;
-            _isBoardRotated = false;
         }
 
         _cam.transform.rotation = Quaternion.Euler(rotationVector);
@@ -233,11 +231,11 @@ public class BoardManager : MonoBehaviour{
             }
         }
     }
-    public void ShowPieces(){
-        GameObject pieces = GameObject.FindGameObjectWithTag("pieces");
-        if (pieces != null)
-            pieces.SetActive(true);
-    }
+    // public void ShowPieces(){
+    //     GameObject pieces = GameObject.FindGameObjectWithTag("pieces");
+    //     if (pieces != null)
+    //         pieces.SetActive(true);
+    // }
 
     public void ClearAllLegalMoves(){
         foreach (var piece in Board){
