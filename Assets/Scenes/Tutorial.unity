@@ -427,8 +427,9 @@ PrefabInstance:
       propertyPath: m_text
       value: "1- All FIDE rules apply*\n2- Move pieces by dragging them \n3- To win,
         check the enemy king thrice\n4- Leaving king in danger is instant loss\n5-
-        The game will allow you to hang your king**\n\n* Except promotions and en
-        passant as for Ver1.2\n \n\n\n\n\t  ~~Press Space to start a game~~\n\nVer1.2"
+        The game will allow you to hang your king**\n\nUpdates: The following has
+        been implemented:\n- Dragging system, castling, move highlights\n\n\n\t 
+        ~~Press Space to start a game~~\n\n* Except promotions and en passant\nVer1.2"
       objectReference: {fileID: 0}
     - target: {fileID: 2455588413907949255, guid: d0488a190eb344be5a323e8d9c1991a8, type: 3}
       propertyPath: m_fontSize
