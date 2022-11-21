@@ -48,6 +48,23 @@ public class GameState : MonoBehaviour{
         return ;
     }
     public void MovePiece(Move move){
+        GameObject sqrObj;
+        Square sqr;
+        if (_runtimeData.highlightedFromSquare.Length > 1){
+            var x = _runtimeData.highlightedFromSquare[0];
+            var y = _runtimeData.highlightedFromSquare[1];
+            sqrObj = GameObject.Find($"Square:({x},{y})");
+            sqr = sqrObj.GetComponent<Square>();
+            sqr.Init((x + y) % 2 != 0);
+        }
+        if (_runtimeData.highlightedToSquare.Length > 1){
+            var x = _runtimeData.highlightedToSquare[0];
+            var y = _runtimeData.highlightedToSquare[1];
+            sqrObj = GameObject.Find($"Square:({x},{y})");
+            sqr = sqrObj.GetComponent<Square>();
+            sqr.Init((x + y) % 2 != 0);
+        }
+        
         int from_x = move.Piece.GetFile();
         int from_y = move.Piece.GetRank();
         int to_x = move.X;
@@ -103,6 +120,17 @@ public class GameState : MonoBehaviour{
         if (IsCheck()){
             _runtimeData.isCheck = true;
         }
+        // highlight new squares
+        sqrObj = GameObject.Find($"Square:({to_x},{to_y})");
+        sqr = sqrObj.GetComponent<Square>();
+        sqr.HighlightToSquare();
+        _runtimeData.highlightedToSquare = new int[2]{to_x, to_y};
+
+        sqrObj = GameObject.Find($"Square:({from_x},{from_y})");
+        sqr = sqrObj.GetComponent<Square>();
+        sqr.HighlightFromSquare();
+        _runtimeData.highlightedFromSquare = new int[2]{from_x, from_y};
+        
         
     }
     bool IsCheck(){

@@ -40,8 +40,8 @@ public class BoardManager : MonoBehaviour{
         // Debug.Log("End generating squares:");
         
         // Debug.Log("Setting board FEN:");
-        // _runtimeData.FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        _runtimeData.FEN = "r3k2r/pppqppbp/2np1np1/5b2/5B2/2NP1NP1/PPPQPPBP/R3K2R w KQkq - 6 8";
+        _runtimeData.FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        // _runtimeData.FEN = "r3k2r/pppqppbp/2np1np1/5b2/5B2/2NP1NP1/PPPQPPBP/R3K2R w KQkq - 6 8";
         ReadFEN(_runtimeData.FEN);
         // Debug.Log("End setting board");
         // FlipBoard();
@@ -66,6 +66,7 @@ public class BoardManager : MonoBehaviour{
                 var generatedSquare = Instantiate(_squarePrefab, new Vector3(x,y,1), Quaternion.identity, GameObject.Find("Board").transform);
                 generatedSquare.name = $"Square:({x},{y})";
                 var isDarkSquare = (x + y) % 2 != 0;
+                generatedSquare.SetCoord(x,y);
                 generatedSquare.Init(isDarkSquare);
             }
         }

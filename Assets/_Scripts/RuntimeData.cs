@@ -14,4 +14,7 @@ public class RuntimeData : ScriptableObject{
 
     public Player White;
     public Player Black;
+
+    public int[] highlightedFromSquare = new int[2];
+    public int[] highlightedToSquare  = new int[2];
 }
