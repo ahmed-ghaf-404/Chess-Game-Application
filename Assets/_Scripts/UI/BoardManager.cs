@@ -42,12 +42,6 @@ public class BoardManager : MonoBehaviour{
         // Debug.Log("generating all legal moves:");
         GenerateAllLegalMoves();
         // Debug.Log("End generating all legal moves");
-
-        ResetRuntimeData();
-    }
-    void ResetRuntimeData(){
-        _runtimeData.halfMoveNum = 0;
-        _runtimeData.moveNum = 0;
     }
     void Start(){
         SoundManager.PlaySound("notification");
@@ -80,11 +74,10 @@ public class BoardManager : MonoBehaviour{
         
         // 
         generatedPiece.name = $"Piece:({file},{rank})";
-        generatedPiece.Init(file,rank,color);
+        generatedPiece.Init(name,file,rank,color);
         
         if (file>=0 && file<8 && rank>=0 && rank<8){
             // this settings are only for playable pieces ON THE BOARD
-            generatedPiece.SetName(name);
             _runtimeData.Board[file, rank] = generatedPiece;
         }
         
@@ -185,7 +178,7 @@ public class BoardManager : MonoBehaviour{
                 if (board[j,i] == null)
                     s+="  |";
                 else{
-                    s += $"{board[j,i].GetSymbol()}|";
+                    s += $"{board[j,i].Code}|";
                 }
             }
             s+='\n';

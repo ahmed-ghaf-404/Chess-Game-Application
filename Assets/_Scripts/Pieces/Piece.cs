@@ -13,7 +13,16 @@ public abstract class Piece : MonoBehaviour{
     protected int color;
 
     protected int MAX_MOVEMENT;
-    protected string pieceName;
+    protected string _name;
+    public string Name{
+        get{return _name;}
+        set{value = _name;}
+    }
+    protected char _code;
+    public char Code{
+        get{return _code;}
+        set{value = _code;}
+    }
     protected Move[] _legalMoves;
     protected bool _hasMoved;
     public bool HasMoved{
@@ -30,12 +39,14 @@ public abstract class Piece : MonoBehaviour{
     abstract public void GenerateLegalMoves(Piece[,] board);
 
     
-    public void Init(int file, int rank, int color){
+    public void Init(string name, int file, int rank, int color){
+        this._name = name;
         this.rank = rank;
         this.file = file;
         this.color = color;
         if (color==1)
             spriteRenderer.sprite = _black;
+        this._code = this.color==0? Char.ToUpper(_name[0]) : Char.ToLower(_name[0]);
     }
 
     public int GetFile(){return this.file;}
@@ -48,9 +59,6 @@ public abstract class Piece : MonoBehaviour{
         if (color==1)
             spriteRenderer.sprite = _black;
     } 
-
-    public string GetName(){return this.pieceName;} 
-    public void SetName(string pieceName){this.pieceName=pieceName;} 
     public Move[] GetLegalMoves(){
         return _legalMoves;
     }
@@ -64,11 +72,9 @@ public abstract class Piece : MonoBehaviour{
     }
 
     public string PieceString(){
-        return $"{color} {pieceName}: ({rank},{file})";
+        return $"{color} {_name}: ({rank},{file})";
     }
-    public char GetSymbol(){
-        return pieceName[0];
-    }
+    
     public bool IsLegalMove(Move other_move){
         foreach (var move in _legalMoves){
             if (move == null)
@@ -104,12 +110,14 @@ public abstract class Piece : MonoBehaviour{
             foreach (string moveType in MoveTypes){
                 temp = new Move(this, x, y, moveType, _runtimeData.FEN);
                 if (IsLegalMove(temp)){
-                    GameState.Instance.MovePiece(temp);
                     GameState.Instance.SwitchCurrentPlayer();
+                    if (temp.Type == "capture" || this.Name == "pawn"){
+                        _runtimeData.halfMoveNum = 0;
+                    }
+                    GameState.Instance.MovePiece(temp);
                     BoardManager.Instance.GenerateAllLegalMoves();
                     HasMoved = true;
-                    moved = true;
-                }    
+                }
             }
             
             if (!moved){

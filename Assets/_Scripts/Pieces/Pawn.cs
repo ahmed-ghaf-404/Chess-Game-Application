@@ -5,8 +5,6 @@ public class Pawn : Piece{
     private int MOVEMENT_OFSET;
 
     Pawn(){
-        // ? INFO/Question: Is this important??
-        SetName(pieceName);
         this._legalMoves = new Move[4];
     }
     

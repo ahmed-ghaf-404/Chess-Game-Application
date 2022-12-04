@@ -1,7 +1,6 @@
 public class Queen : Piece{
     Queen(){
         MAX_MOVEMENT = 27;
-        SetName(pieceName);
     }
     int CreateMove(Piece[,] board, int dx, int dy, int index){
         int curr_x = GetFile() + dx;

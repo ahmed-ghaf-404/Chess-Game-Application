@@ -2,9 +2,10 @@ using System.Linq;
 using UnityEngine;
 
 public class Rook : Piece{
+    int og_file = -1;
+    int og_rank = -1;
     Rook(){
         MAX_MOVEMENT = 14;
-        SetName(pieceName);
     }
 
     int CreateMove(Piece[,] board, int dx, int dy, int index){
@@ -34,11 +35,37 @@ public class Rook : Piece{
     }
     override 
     public void GenerateLegalMoves(Piece[,] board){
+        if (og_file == -1){
+            og_file = file;
+        }
+        if (og_rank == -1){
+            og_rank = rank;
+        }
         _legalMoves = new Move[MAX_MOVEMENT];
         int index = 0;
         foreach (int d in new int[]{-1,1}){
             index = CreateMove(board, d, 0, index);
             index = CreateMove(board, 0, d, index);
+        }
+        if (HasMoved){
+        Debug.Log(og_file);
+        Debug.Log(og_rank);
+            if (og_rank<1){
+                // white
+                if (og_file<1)
+                    // queen side
+                    _runtimeData.White.CanCastleLong = false;
+                else
+                    _runtimeData.White.CanCastleShort = false;
+            }
+            else{
+                // black
+                if (og_file<1)
+                    // queen side
+                    _runtimeData.Black.CanCastleLong = false;
+                else
+                    _runtimeData.Black.CanCastleShort = false;
+            }
         }
     }
 }

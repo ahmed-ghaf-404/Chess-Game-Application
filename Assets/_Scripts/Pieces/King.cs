@@ -3,12 +3,24 @@ using UnityEngine;
 
 public class King : Piece{
     King(){
-        SetName(pieceName);
+        MAX_MOVEMENT = 8;
     }
     override 
     public void GenerateLegalMoves(Piece[,] board){
+        if (HasMoved){
+            // no caslting
+            if (color==0){
+                _runtimeData.White.CanCastleLong = false;
+                _runtimeData.White.CanCastleShort = false;
+            }
+            else{
+                _runtimeData.Black.CanCastleLong = false;
+                _runtimeData.Black.CanCastleShort = false;
+            }
+        }
+
         // quite moves 
-        _legalMoves = new Move[8];
+        _legalMoves = new Move[MAX_MOVEMENT];
         int index = 0;
         int x;
         int y;

@@ -3,7 +3,6 @@ using UnityEngine;
 public class Bishop : Piece{
     Bishop(){
         MAX_MOVEMENT = 13;
-        SetName(pieceName);
     }
 
     int CreateMove(Piece[,] board, int dx, int dy, int index){

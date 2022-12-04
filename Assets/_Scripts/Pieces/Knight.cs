@@ -4,7 +4,6 @@ public class Knight : Piece{
 
     Knight(){
         MAX_MOVEMENT = 8;
-        SetName(pieceName);
     }
     int CreateMove(Piece[,] board, int x, int y, int index){
         if (x>=0 && x<8 && y>=0 && y<8){

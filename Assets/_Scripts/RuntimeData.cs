@@ -9,8 +9,8 @@ public class RuntimeData : ScriptableObject{
     public string FEN;
     public bool isCheck;
     public Move[] moves;
-    public int moveNum;
-    public int halfMoveNum;
+    public int moveNum = 1;
+    public int halfMoveNum = 0;
     public bool isGameOver;
 
     public Player White;

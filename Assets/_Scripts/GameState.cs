@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Text;
 
 public class GameState : MonoBehaviour{
     [SerializeField] RuntimeData _runtimeData;
@@ -40,14 +41,17 @@ public class GameState : MonoBehaviour{
     }
 
     public void SwitchCurrentPlayer(){
+        _runtimeData.halfMoveNum += 1;
         if (_runtimeData.CurrentPlayer == _runtimeData.White){
             _runtimeData.CurrentPlayer = _runtimeData.Black;
+            Debug.Log("Blacks turn");
             return ;
         }
-        _runtimeData.CurrentPlayer = _runtimeData.White;
+        else{
+            _runtimeData.CurrentPlayer = _runtimeData.White;
+        }
         
         _runtimeData.moveNum += 1;
-        _runtimeData.halfMoveNum += 1;
         
         return ;
     }
@@ -77,6 +81,7 @@ public class GameState : MonoBehaviour{
         bool isShortCastling = move.Type == "shortCastling";
         bool isLongCastling = move.Type == "longCastling";
 
+        _runtimeData.Board[from_x, from_y].HasMoved = true;
         _runtimeData.Board[to_x, to_y] = _runtimeData.Board[from_x, from_y];
         _runtimeData.Board[from_x, from_y] = null;
 
@@ -95,6 +100,7 @@ public class GameState : MonoBehaviour{
         pieceObj.name = $"Piece:({to_x},{to_y})";
         _runtimeData.Board[to_x,to_y].SetFile(to_x);
         _runtimeData.Board[to_x,to_y].SetRank(to_y);
+
         
         // move rooks for castling
         if (isShortCastling || isLongCastling){
@@ -135,19 +141,80 @@ public class GameState : MonoBehaviour{
         sqr.HighlightFromSquare();
         _runtimeData.highlightedFromSquare = new int[2]{from_x, from_y};
         
+        // 
+
         // encode current position to FEN
-        EncodeFEN();
-        
+        _runtimeData.FEN =  EncodeFEN();
     }
 
     private string EncodeFEN(){
+        // piece positioning
+        string s = $"{EncodePiecePosition()} ";
+        // current player color
+        var color = _runtimeData.PreviousPlayer.Color == 0? 'w' : 'b';
+        s += $"{color} ";
+        // castling right
+        s += $"{EncodeCastling()} ";
+        // en passant hasn't been implemented yet.
+        s += $"{EncodeEnPassant()} ";
+        s += $"{_runtimeData.halfMoveNum} ";
+        s += $"{_runtimeData.moveNum}";
+        return s;
+    }
+    private string EncodeEnPassant(){
+        return "-";
+    }
+    private string EncodeCastling(){
+        string result = "";
+        if (_runtimeData.White.CanCastleShort)
+            result += "K";
+        if (_runtimeData.White.CanCastleLong)
+            result += "Q";
+        if (_runtimeData.Black.CanCastleShort)
+            result += "k";
+        if (_runtimeData.Black.CanCastleLong)
+            result += "q";
+        if (result == "")
+            return "-";
+        return result;
+    }
+    private string EncodePiecePosition(){
+        StringBuilder sb;
         string[] rankFEN = new string[8];
         for (int i=0;i<8;i++){
             for (int j=0; j<8;j++){
-                switch 
+                if(rankFEN[7-j] == null){
+                    if (_runtimeData.Board[i,j] != null){
+                        rankFEN[7-j] = char.ToString(_runtimeData.Board[i,j].Code);
+                    }
+                    else{
+                        rankFEN[7-j] = "1";
+                    }
+                }
+                else{
+                    if (_runtimeData.Board[i,j] != null){
+                        rankFEN[7-j] += _runtimeData.Board[i,j].Code;
+                    }
+                    else{
+                        if (char.IsDigit(rankFEN[7-j][rankFEN[7-j].Length-1])){
+                            sb = new StringBuilder(rankFEN[7-j]);
+                            var d = rankFEN[7-j][rankFEN[7-j].Length-1] - '0' + 1;
+                            sb[sb.Length-1] = (char)(d + 48);
+                            rankFEN[7-j] = sb.ToString();
+                        }
+                        else{
+                            rankFEN[7-j] += "1";
+                        }
+                    }
+                }
             }
         }
-        return null;
+        string posFEN = "";
+        foreach (var v in rankFEN){
+            posFEN += $"{v}/";
+        }
+        posFEN = posFEN.Substring(0, posFEN.Length-1);
+        return posFEN;
     }
     bool IsCheck(){
         for (int i=0; i<8; i++){
