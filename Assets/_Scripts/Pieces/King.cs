@@ -2,7 +2,6 @@ using System.Linq;
 using UnityEngine;
 
 public class King : Piece{
-
     King(){
         SetName(pieceName);
     }
@@ -19,10 +18,10 @@ public class King : Piece{
                 y = GetRank() + j;
                 if (!(x==GetFile() && y == GetRank()) && x>=0 && x<8 && y>=0 && y<8){
                     if (board[x,y] == null){
-                        _legalMoves[index++] = new Move(this, x,y, "quite");
+                        _legalMoves[index++] = new Move(this, x,y, "quite", _runtimeData.FEN);
                     }
                     else if (IsEnemy(board[x,y])){
-                        _legalMoves[index++] = new Move(this, x,y, "capture");
+                        _legalMoves[index++] = new Move(this, x,y, "capture", _runtimeData.FEN);
                     }
                 }
             }
@@ -38,7 +37,7 @@ public class King : Piece{
                 if (board[GetFile()+3, GetRank()].GetType() == typeof(Rook) && !board[GetFile()+3, GetRank()].HasMoved){
                     // legal to short castle
                     // Debug.Log($"{player} can short castle");
-                    _legalMoves[index++] = new Move(this, GetFile()+2, GetRank(), "shortCastling");
+                    _legalMoves[index++] = new Move(this, GetFile()+2, GetRank(), "shortCastling", _runtimeData.FEN);
                 }
             }
         }
@@ -48,7 +47,7 @@ public class King : Piece{
                 if (board[GetFile()-4, GetRank()].GetType() == typeof(Rook) && !board[GetFile()-4, GetRank()].HasMoved){
                     // legal to long castle
                     // Debug.Log($"{player} can long castle");
-                    _legalMoves[index++] = new Move(this, GetFile()-2, GetRank(), "longCastling");
+                    _legalMoves[index++] = new Move(this, GetFile()-2, GetRank(), "longCastling", _runtimeData.FEN);
                 }
             }
         }

@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class Piece : MonoBehaviour{
        
     [SerializeField] Sprite _black;
+    protected RuntimeData _runtimeData;
     public static string[] MoveTypes = {"check", "capture", "quite", "shortCastling", "longCastling"};
     protected int file;
     protected int rank;
@@ -23,6 +24,7 @@ public abstract class Piece : MonoBehaviour{
     SpriteRenderer spriteRenderer;
     public void Awake(){
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        _runtimeData = BoardManager.Instance._runtimeData;
     }
     
     abstract public void GenerateLegalMoves(Piece[,] board);
@@ -100,7 +102,7 @@ public abstract class Piece : MonoBehaviour{
             var moved = false;
             Move temp;
             foreach (string moveType in MoveTypes){
-                temp = new Move(this, x, y, moveType);
+                temp = new Move(this, x, y, moveType, _runtimeData.FEN);
                 if (IsLegalMove(temp)){
                     GameState.Instance.MovePiece(temp);
                     GameState.Instance.SwitchCurrentPlayer();

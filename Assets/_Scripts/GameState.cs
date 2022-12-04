@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class GameState : MonoBehaviour{
     [SerializeField] RuntimeData _runtimeData;
@@ -7,9 +8,11 @@ public class GameState : MonoBehaviour{
         set{_runtimeData = value;}
     }
     [SerializeField] GameOverScreen GOS;
+    [SerializeField] TMP_Text _fenText;
     private Move[] _gameMoves;
     private Player _winner;
     private string _winReason;
+    
 
     public void SetGameOver(bool b, string s){
         _runtimeData.isGameOver = b;
@@ -33,6 +36,7 @@ public class GameState : MonoBehaviour{
             catch (System.Exception){   
             }
         }
+        _fenText.text = _runtimeData.FEN;
     }
 
     public void SwitchCurrentPlayer(){
@@ -73,8 +77,8 @@ public class GameState : MonoBehaviour{
         bool isShortCastling = move.Type == "shortCastling";
         bool isLongCastling = move.Type == "longCastling";
 
-        BoardManager.Instance.Board[to_x, to_y] = BoardManager.Instance.Board[from_x, from_y];
-        BoardManager.Instance.Board[from_x, from_y] = null;
+        _runtimeData.Board[to_x, to_y] = _runtimeData.Board[from_x, from_y];
+        _runtimeData.Board[from_x, from_y] = null;
 
         GameObject pieceObj = GameObject.Find($"Piece:({from_x},{from_y})");
         
@@ -89,8 +93,8 @@ public class GameState : MonoBehaviour{
         
         pieceObj.transform.position = new Vector3(to_x, to_y, 0);
         pieceObj.name = $"Piece:({to_x},{to_y})";
-        BoardManager.Instance.Board[to_x,to_y].SetFile(to_x);
-        BoardManager.Instance.Board[to_x,to_y].SetRank(to_y);
+        _runtimeData.Board[to_x,to_y].SetFile(to_x);
+        _runtimeData.Board[to_x,to_y].SetRank(to_y);
         
         // move rooks for castling
         if (isShortCastling || isLongCastling){
@@ -108,10 +112,10 @@ public class GameState : MonoBehaviour{
             pieceObj = GameObject.Find($"Piece:({from_x},{from_y})");
             pieceObj.transform.position = new Vector3(to_x, to_y, 0);
             pieceObj.name = $"Piece:({to_x},{to_y})";
-            BoardManager.Instance.Board[to_x, to_y] = BoardManager.Instance.Board[from_x, from_y];
-            BoardManager.Instance.Board[from_x, from_y] = null;
-            BoardManager.Instance.Board[to_x,to_y].SetFile(to_x);
-            BoardManager.Instance.Board[to_x,to_y].SetRank(to_y);
+            _runtimeData.Board[to_x, to_y] = _runtimeData.Board[from_x, from_y];
+            _runtimeData.Board[from_x, from_y] = null;
+            _runtimeData.Board[to_x,to_y].SetFile(to_x);
+            _runtimeData.Board[to_x,to_y].SetRank(to_y);
 
         }
         _runtimeData.PreviousPlayer = _runtimeData.CurrentPlayer;
@@ -131,14 +135,26 @@ public class GameState : MonoBehaviour{
         sqr.HighlightFromSquare();
         _runtimeData.highlightedFromSquare = new int[2]{from_x, from_y};
         
+        // encode current position to FEN
+        EncodeFEN();
         
+    }
+
+    private string EncodeFEN(){
+        string[] rankFEN = new string[8];
+        for (int i=0;i<8;i++){
+            for (int j=0; j<8;j++){
+                switch 
+            }
+        }
+        return null;
     }
     bool IsCheck(){
         for (int i=0; i<8; i++){
             for (int j=0; j<8; j++){
-                var p = BoardManager.Instance.Board[i,j];
+                var p = _runtimeData.Board[i,j];
                 if (p!=null && !_runtimeData.isGameOver){
-                    p.GenerateLegalMoves(BoardManager.Instance.Board);
+                    p.GenerateLegalMoves(_runtimeData.Board);
                     foreach (var move in p.GetLegalMoves()){
                         if (move!=null){
                             if ("check" == move.Type){

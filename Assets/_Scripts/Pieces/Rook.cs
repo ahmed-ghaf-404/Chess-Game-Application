@@ -2,7 +2,6 @@ using System.Linq;
 using UnityEngine;
 
 public class Rook : Piece{
-    
     Rook(){
         MAX_MOVEMENT = 14;
         SetName(pieceName);
@@ -14,15 +13,15 @@ public class Rook : Piece{
         int curr_y = GetRank() + dy;
         while (curr_x>=0 && curr_x <8 && curr_y>=0 && curr_y<8){
             if (board[curr_x, curr_y] == null){
-                _legalMoves[index++] = new Move(this, curr_x, curr_y, "quite");
+                _legalMoves[index++] = new Move(this, curr_x, curr_y, "quite", _runtimeData.FEN);
             }
             else{
                 if (IsEnemy(board[curr_x,curr_y])){
                     if (board[curr_x, curr_y].GetType() == typeof(King)){
-                        _legalMoves[index++] = new Move(this, curr_x, curr_y, "check");
+                        _legalMoves[index++] = new Move(this, curr_x, curr_y, "check", _runtimeData.FEN);
                     }
                     else{
-                        _legalMoves[index++] = new Move(this, curr_x, curr_y, "capture");
+                        _legalMoves[index++] = new Move(this, curr_x, curr_y, "capture", _runtimeData.FEN);
                     }
                 }
                 break;

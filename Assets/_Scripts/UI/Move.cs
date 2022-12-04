@@ -1,4 +1,11 @@
 public class Move{
+    public Move(Piece p, int x, int y, string type, string fen){
+        this._piece = p;
+        this._x = x;
+        this._y = y;
+        this._type = type;
+        this._fen = fen;
+    }
     protected Piece _piece;
     public Piece Piece{
         get{return _piece;}
@@ -31,44 +38,6 @@ public class Move{
     public bool IsSameMove(Move m){
         return m.X==this._x && m.Y==this._y && m.Type==_type;
     }
-    public Move(Piece p, int x, int y, string type){
-        this._piece = p;
-        this._x = x;
-        this._y = y;
-        this._type = type;
-    }
+    
+    
 }
-
-// class QuitMove : Move{
-//     public QuitMove(Piece p, int x, int y){
-//         this._thisPiece = p;
-//         this.X = x;
-//         this.Y = y;
-//     }
-// }
-
-// class CaptureMove : Move{
-//     public CaptureMove(Piece p, int x, int y){
-//         this._thisPiece = p;
-//         this.X = x;
-//         this.Y = y;
-//     }
-// }
-// class CheckMove : Move{
-//     public CheckMove(Piece p, int x, int y){
-//         this._thisPiece = p;
-//         this.X = x;
-//         this.Y = y;
-//     }
-// }
-
-// class ShortCastleMove: Move{
-//     public ShortCastleMove(Piece p, int x, int y){
-//         this._thisPiece = p;      
-//     }
-// }
-// class LongCastleMove: Move{
-//     public LongCastleMove(Piece p, int x, int y){
-//         this._thisPiece = p;
-//     }
-// }

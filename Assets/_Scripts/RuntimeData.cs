@@ -5,6 +5,7 @@ using UnityEngine;
 public class RuntimeData : ScriptableObject{
     public Player CurrentPlayer;
     public Player PreviousPlayer;
+    public Piece[,] Board;
     public string FEN;
     public bool isCheck;
     public Move[] moves;

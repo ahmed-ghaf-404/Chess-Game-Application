@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _black: {fileID: 21300000, guid: 9371771a2ee0c42f7bbaf8bba037dcc4, type: 3}
+  _runtimeData: {fileID: 11400000, guid: acae55e5e9687435ab45e7771d340248, type: 2}
 --- !u!61 &3329110775419245654
 BoxCollider2D:
   m_ObjectHideFlags: 0

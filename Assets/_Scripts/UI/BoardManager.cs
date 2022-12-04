@@ -15,26 +15,19 @@ public class BoardManager : MonoBehaviour{
     [SerializeField] private Queen _queenPrefab;
     [SerializeField] private King _kingPrefab;
 
-    [SerializeField] RuntimeData _runtimeData;
-
+    [SerializeField] public RuntimeData _runtimeData;
+    
     
     static public BoardManager Instance;
     Piece prefab;
-    private Piece[,] _board;
-
-
-    public Piece[,] Board{
-        get{return _board;}
-        set{_board = value;}
-    }
-
+    private object f;
 
     void Awake(){
         Instance = this;
         _runtimeData.White = new Player(0);
         _runtimeData.Black = new Player(1);
 
-        this._board = new Piece[_height, _width];
+        this._runtimeData.Board = new Piece[_height, _width];
         // Debug.Log("Generating squares:");
         GenerateSquares();
         // Debug.Log("End generating squares:");
@@ -92,7 +85,7 @@ public class BoardManager : MonoBehaviour{
         if (file>=0 && file<8 && rank>=0 && rank<8){
             // this settings are only for playable pieces ON THE BOARD
             generatedPiece.SetName(name);
-            Board[file, rank] = generatedPiece;
+            _runtimeData.Board[file, rank] = generatedPiece;
         }
         
         return generatedPiece;
@@ -127,8 +120,8 @@ public class BoardManager : MonoBehaviour{
         foreach (char c in castling){
             switch (c){
                 case 'K':  
-                    if (Board[4,0]!=null){
-                        if (Board[4,0].GetType() == typeof(King))
+                    if (_runtimeData.Board[4,0]!=null){
+                        if (_runtimeData.Board[4,0].GetType() == typeof(King))
                             _runtimeData.White.CanCastleShort = true; 
                     }
                     else{
@@ -136,8 +129,8 @@ public class BoardManager : MonoBehaviour{
                     }
                     break;
                 case 'Q':  
-                    if (Board[4,0] != null)
-                        if (Board[4,0].GetType() == typeof(King)){
+                    if (_runtimeData.Board[4,0] != null)
+                        if (_runtimeData.Board[4,0].GetType() == typeof(King)){
                             _runtimeData.White.CanCastleLong = true; 
                         }
                         else{
@@ -145,8 +138,8 @@ public class BoardManager : MonoBehaviour{
                         }
                     break;
                 case 'k':  
-                    if (Board[4,7] != null)
-                        if (Board[4,7].GetType() == typeof(King)){
+                    if (_runtimeData.Board[4,7] != null)
+                        if (_runtimeData.Board[4,7].GetType() == typeof(King)){
                             _runtimeData.Black.CanCastleShort = true; 
                         }
                         else{
@@ -154,8 +147,8 @@ public class BoardManager : MonoBehaviour{
                         }
                     break;
                 case 'q':  
-                    if (Board[4,7] != null)
-                        if (Board[4,7].GetType() == typeof(King)){                        
+                    if (_runtimeData.Board[4,7] != null)
+                        if (_runtimeData.Board[4,7].GetType() == typeof(King)){                        
                             _runtimeData.Black.CanCastleLong = true; 
                         }
                         else{
@@ -201,10 +194,10 @@ public class BoardManager : MonoBehaviour{
     }
 
     public void GenerateAllLegalMoves(){
-        foreach (var piece in Board){
+        foreach (var piece in _runtimeData.Board){
             if (piece!=null){
                 if(piece.GetColor()==_runtimeData.CurrentPlayer.Color){
-                    piece.GenerateLegalMoves(Board);
+                    piece.GenerateLegalMoves(_runtimeData.Board);
                 }
             }
         }
@@ -223,7 +216,7 @@ public class BoardManager : MonoBehaviour{
         for (int i=0; i<8; i++){
             for(int j=0; j<8; j++){
                 GameObject go;
-                if (Board[i,j] != null){
+                if (_runtimeData.Board[i,j] != null){
                     go = GameObject.Find($"Piece:({i},{j})");
                     go.transform.rotation = Quaternion.Euler(rotationVector);
                 }
@@ -239,7 +232,7 @@ public class BoardManager : MonoBehaviour{
     // }
 
     public void ClearAllLegalMoves(){
-        foreach (var piece in Board){
+        foreach (var piece in _runtimeData.Board){
             if (piece!=null){
                 piece.ClearLegalMoves();
             }
