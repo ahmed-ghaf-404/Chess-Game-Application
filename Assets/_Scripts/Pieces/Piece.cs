@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -6,7 +7,7 @@ using UnityEngine;
 public abstract class Piece : MonoBehaviour{
        
     [SerializeField] Sprite _black;
-    protected RuntimeData _runtimeData;
+    [SerializeField] protected RuntimeData _runtimeData;
     public static string[] MoveTypes = {"check", "capture", "quite", "shortCastling", "longCastling"};
     protected int file;
     protected int rank;
@@ -23,7 +24,7 @@ public abstract class Piece : MonoBehaviour{
         get{return _code;}
         set{value = _code;}
     }
-    protected Move[] _legalMoves;
+    
     protected bool _hasMoved;
     public bool HasMoved{
         get{return _hasMoved;}
@@ -33,7 +34,9 @@ public abstract class Piece : MonoBehaviour{
     SpriteRenderer spriteRenderer;
     public void Awake(){
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        _runtimeData = BoardManager.Instance._runtimeData;
+        if (!_runtimeData.LegalMoves.ContainsKey(this)){
+            _runtimeData.LegalMoves.Add(this, new List<Move>());
+        }
     }
     
     abstract public void GenerateLegalMoves(Piece[,] board);
@@ -59,11 +62,8 @@ public abstract class Piece : MonoBehaviour{
         if (color==1)
             spriteRenderer.sprite = _black;
     } 
-    public Move[] GetLegalMoves(){
-        return _legalMoves;
-    }
-    public void SetLegalMoves(Move[] moves){
-        this._legalMoves = moves;
+    public List<Move> GetLegalMoves(){
+        return _runtimeData.LegalMoves[this];
     }
     public bool IsEnemy(Piece other){
         if (other==null)
@@ -76,16 +76,16 @@ public abstract class Piece : MonoBehaviour{
     }
     
     public bool IsLegalMove(Move other_move){
-        foreach (var move in _legalMoves){
-            if (move == null)
-                continue;
-            else if (move.IsSameMove(other_move))
+        foreach (var move in _runtimeData.LegalMoves[this]){
+            if (move.IsSameMove(other_move)){
+                _runtimeData.CurrentMoveLegalMove = move;
                 return true;
+            }
         }
         return false;
     }
     public void ClearLegalMoves(){
-        _legalMoves = new Move[1];
+        _runtimeData.LegalMoves[this] = new List<Move>();
     }
 
     Vector3 GetMousePosition(){
@@ -94,14 +94,14 @@ public abstract class Piece : MonoBehaviour{
         return mousePosition;
     }
     void OnMouseDrag(){
-        if(GameState.Instance.RuntimeData.CurrentPlayer.Color == color && !GameState.Instance.RuntimeData.isGameOver){
+        if(_runtimeData.CurrentPlayer.Color == color && !_runtimeData.isGameOver){
             var pos = GetMousePosition();
             pos.z = -0.5f;
             transform.position = pos;
         }
     }
     void OnMouseUp(){
-        if(GameState.Instance.RuntimeData.CurrentPlayer.Color == color && !GameState.Instance.RuntimeData.isGameOver){
+        if(_runtimeData.CurrentPlayer.Color == color && !_runtimeData.isGameOver){
             var piecePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var x = (int) Math.Round(piecePosition.x, MidpointRounding.AwayFromZero);
             var y = (int) Math.Round(piecePosition.y, MidpointRounding.AwayFromZero);
@@ -114,7 +114,8 @@ public abstract class Piece : MonoBehaviour{
                     if (temp.Type == "capture" || this.Name == "pawn"){
                         _runtimeData.halfMoveNum = 0;
                     }
-                    GameState.Instance.MovePiece(temp);
+                    MoveTo(_runtimeData.CurrentMoveLegalMove);
+                    moved = true;
                     BoardManager.Instance.GenerateAllLegalMoves();
                     HasMoved = true;
                 }
@@ -124,6 +125,25 @@ public abstract class Piece : MonoBehaviour{
                 gameObject.transform.position = new Vector3(GetFile(), GetRank(), 0);
             }
         }
+    }
+
+    protected void MoveTo(Move m){
+        // move the piece block!
+        // TODO: otherwise no moves!
+        transform.position = new Vector3(m.X, m.Y, 0);
+        //
+
+        _runtimeData.EnPassantSquare = null; // reset enpassant
+
+        if (m.SpecialMove == 3){
+            Debug.Log("This pawn doubled the moves!");
+            // ! ENPASSANT IS LEGAL AT X - OFFSET, Y!
+            var rank = m.Piece.color==0? m.Y - 1 : m.Y + 1;
+            _runtimeData.EnPassantSquare = new Tuple<int, int>(m.X, rank);
+            Debug.Log(_runtimeData.EnPassantSquare);
+        }
+        else
+            Debug.Log(m.SpecialMove);
     }
     
 }

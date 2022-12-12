@@ -44,7 +44,6 @@ public class GameState : MonoBehaviour{
         _runtimeData.halfMoveNum += 1;
         if (_runtimeData.CurrentPlayer == _runtimeData.White){
             _runtimeData.CurrentPlayer = _runtimeData.Black;
-            Debug.Log("Blacks turn");
             return ;
         }
         else{

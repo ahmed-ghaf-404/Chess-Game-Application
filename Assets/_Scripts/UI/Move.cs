@@ -6,6 +6,14 @@ public class Move{
         this._type = type;
         this._fen = fen;
     }
+    public Move(Piece p, int x, int y, string type, string fen, int specialMove){
+        this._piece = p;
+        this._x = x;
+        this._y = y;
+        this._type = type;
+        this._fen = fen;
+        this._specialMove = specialMove;
+    }
     protected Piece _piece;
     public Piece Piece{
         get{return _piece;}
@@ -30,6 +38,11 @@ public class Move{
     public string FEN{
         get{return _fen;}
         set{_fen = value;}
+    }
+    private int _specialMove;
+    public int SpecialMove{
+        get{return _specialMove;}
+        set{_specialMove = value;}
     }
     
     public override string ToString(){

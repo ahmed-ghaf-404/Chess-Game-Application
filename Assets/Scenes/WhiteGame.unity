@@ -1377,12 +1377,12 @@ MonoBehaviour:
   _height: 8
   _squarePrefab: {fileID: 4230531451631161056, guid: 368c11ef76dc94cfbb1bedb1fc0da411, type: 3}
   _cam: {fileID: 519420032}
-  _pawnPrefab: {fileID: 1592505623510050313, guid: 2887144a2bb8946e984c17a1daf26c0e, type: 3}
-  _knightPrefab: {fileID: 8220494847160905595, guid: 95f38306596b84f95a9388df5ea3ff9c, type: 3}
-  _bishopPrefab: {fileID: 2695960866057107824, guid: 1a7804a7cb6564848a84d620205395a4, type: 3}
-  _rookPrefab: {fileID: 6248714427497841056, guid: 3bf87eaf5818e4af8b0aaa61da04bbc4, type: 3}
-  _queenPrefab: {fileID: 4124020808173810011, guid: f2303619c6c824616a625ab5fb82014d, type: 3}
-  _kingPrefab: {fileID: 5422082308296062797, guid: 42089f1902d544c9aa5bc491a2759389, type: 3}
+  _pawnPrefab: {fileID: 1592505623510050313, guid: 58dbe1227a355964eb7161342ca5650e, type: 3}
+  _knightPrefab: {fileID: 8220494847160905595, guid: 02d1e23b25da55041a7d784232b9a2a6, type: 3}
+  _bishopPrefab: {fileID: 2695960866057107824, guid: cebdc1f64b0ebe94c8e3e98a26b65a22, type: 3}
+  _rookPrefab: {fileID: 6248714427497841056, guid: 4a9e2859262175d4caf7bc0291ac259d, type: 3}
+  _queenPrefab: {fileID: 4124020808173810011, guid: f4bfd19b2e5bb7641a39962ad24e6744, type: 3}
+  _kingPrefab: {fileID: 5422082308296062797, guid: d62ebb70a364eee4db2bebcedd8aa195, type: 3}
   _runtimeData: {fileID: 11400000, guid: acae55e5e9687435ab45e7771d340248, type: 2}
 --- !u!61 &2079797743
 BoxCollider2D:
